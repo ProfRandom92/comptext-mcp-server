@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We release patches for security vulnerabilities. Which versions are eligible for receiving such patches depends on the CVSS v3.0 Rating:
+We release patches for security vulnerabilities for the following versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -11,84 +11,40 @@ We release patches for security vulnerabilities. Which versions are eligible for
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability, please follow these steps:
+If you discover a security vulnerability within the CompText ecosystem, please send an email to security@comptext.dev. All security vulnerabilities will be promptly addressed.
 
-### DO NOT
+**Please do not create public GitHub issues for security vulnerabilities.**
 
-- Do not open a public GitHub issue
-- Do not disclose the vulnerability publicly
+### What to include in your report:
 
-### DO
+- Type of vulnerability
+- Full paths of source file(s) related to the vulnerability
+- Location of the affected source code (tag/branch/commit or direct URL)
+- Step-by-step instructions to reproduce the issue
+- Proof-of-concept or exploit code (if possible)
+- Impact of the vulnerability
 
-1. **Report privately**: Open a security advisory on GitHub:
-   - Go to the repository
-   - Click on "Security" tab
-   - Click "Report a vulnerability"
+### What to expect:
 
-2. **Include details**:
-   - Type of vulnerability
-   - Full paths of source file(s) related to the issue
-   - Location of the affected source code
-   - Any special configuration required to reproduce
-   - Step-by-step instructions to reproduce
-   - Proof-of-concept or exploit code (if possible)
-   - Impact of the issue
-
-3. **Wait for response**: We will respond within 48 hours
+- Acknowledgment of your report within 48 hours
+- Regular updates on the progress
+- Credit in the security advisory (if desired)
 
 ## Security Best Practices
 
-### Environment Variables
+When using CompText:
 
-- Never commit `.env` files
-- Use environment variables for sensitive data
-- Rotate Notion API tokens regularly
-
-### API Token Security
-
-```bash
-# GOOD: Use environment variables
-export NOTION_API_TOKEN="your_token"
-
-# BAD: Hardcode in source
-NOTION_TOKEN = "ntn_abc123..."  # Never do this!
-```
-
-### Production Deployment
-
-- Use HTTPS for all API endpoints
-- Implement rate limiting
-- Enable CORS only for trusted domains
-- Use secrets management (Railway secrets, etc.)
-- Regular security audits
-
-### Dependencies
-
-- Keep dependencies up to date
-- Use `pip install --upgrade`
-- Review security advisories
-- Run security scanners
-
-```bash
-# Check for known vulnerabilities
-pip audit
-
-# Update dependencies
-pip install --upgrade -r requirements.txt
-```
+1. **API Keys**: Never commit API keys or credentials to version control
+2. **Dependencies**: Keep dependencies up to date
+3. **Validation**: Always validate input when using CompText DSL
+4. **Permissions**: Use least-privilege principles for MCP server access
 
 ## Security Updates
 
-We will notify users of security updates through:
+Security updates are released as patch versions (e.g., 1.0.1, 1.0.2) and are announced through:
 
 - GitHub Security Advisories
 - Release notes
-- Repository README
+- Mailing list (security@comptext.dev)
 
-## Bug Bounty Program
-
-We currently do not have a bug bounty program, but we recognize and appreciate security researchers who responsibly disclose vulnerabilities.
-
-## Contact
-
-For security concerns, please use GitHub's security advisory feature or open an issue labeled "security".
+Thank you for helping keep CompText and our users safe!
