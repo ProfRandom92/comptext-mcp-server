@@ -1,18 +1,18 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: "If you use CompText in your research, please cite it as below."
 authors:
-  - family-names: "ProfRandom"
-    given-names: "CompText Team"
-title: "comptext-mcp-server"
+  - family-names: "Your Name"
+    given-names: ""
+    orcid: ""
+title: "CompText: Token-Efficient DSL for LLM Interactions"
 version: 1.0.0
 date-released: 2025-12-04
-url: "https://github.com/ProfRandom92/comptext-mcp-server"
-repository-code: "https://github.com/ProfRandom92/comptext-mcp-server"
+url: "https://github.com/ProfRandom92/comptext"
+repository-code: "https://github.com/ProfRandom92/comptext"
 keywords:
   - LLM
   - DSL
   - token-optimization
   - AI
-  - MCP
+  - natural-language-processing
 license: MIT
-abstract: "CompText MCP Server - Token-efficient DSL for LLM interactions"
