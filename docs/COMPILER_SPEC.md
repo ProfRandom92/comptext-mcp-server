@@ -28,7 +28,7 @@ clarification: <null or question>
 - ambiguity penalty: -1 if top-2 scores are too close
 
 Confidence:
-- confidence = min(1.0, score / 10.0)
+- confidence = min(1.0, score / 7.0)
 - if confidence < 0.65:
   - return a single clarifying question (no DSL in bundle_only mode unless a safe default exists)
 
