@@ -61,7 +61,7 @@ bundles:
     domain: "security"
     task: "scan"
     match:
-      keywords_any: ["security","vulnerability","unsafe","injection","xss","cve","owasp"]
+      keywords_any: ["security","vulnerability","vulnerabilities","unsafe","injection","xss","cve","owasp"]
     expansion:
       - "@SEC_SCAN[type=code, severity=high, fix=suggest]"
 
@@ -110,7 +110,7 @@ bundles:
     domain: "ml"
     task: "train_evaluate"
     match:
-      keywords_any: ["automl","classification","f1","model selection","cross validation"]
+      keywords_any: ["automl","classification","classifier","train","f1","model selection","cross validation","evaluation","plots"]
     expansion:
       - "@AUTOML[task=classification, metric=f1, cv=5, models=[rf, xgb, lgbm], optimize=hyperparams]"
       - "@MODEL_EVAL[plots=[roc, pr, confusion, calibration], export=true]"
@@ -119,7 +119,7 @@ bundles:
     domain: "ml"
     task: "feature_engineering"
     match:
-      keywords_any: ["feature engineering","feature selection","recursive","interactions","polynomial"]
+      keywords_any: ["feature engineering","feature selection","features","recursive","interactions","polynomial"]
     expansion:
       - "@FEATURE_ENG[auto=true, interactions=2, polynomials=2]"
       - "@FEATURE_SELECT[method=recursive, n=20]"

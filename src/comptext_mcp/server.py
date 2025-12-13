@@ -108,7 +108,7 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="get_by_tag",
-            "description": "Filtere Einträge nach Tag (Core, Erweitert, Optimierung, Visualisierung, Analyse)",
+            description="Filtere Einträge nach Tag (Core, Erweitert, Optimierung, Visualisierung, Analyse)",
             inputSchema={
                 "type": "object",
                 "properties": {

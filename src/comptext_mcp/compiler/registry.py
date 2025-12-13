@@ -30,8 +30,8 @@ class Registry:
 
 
 def _repo_root() -> Path:
-    # file is: src/comptext_mcp/compiler/registry.py → go up 4 to repo root
-    return Path(__file__).resolve().parents[4]
+    # file is: src/comptext_mcp/compiler/registry.py → go up 3 to repo root
+    return Path(__file__).resolve().parents[3]
 
 
 def load_registry(path: Optional[str] = None) -> Registry:

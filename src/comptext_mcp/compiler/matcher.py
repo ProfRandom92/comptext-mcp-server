@@ -60,5 +60,5 @@ def best_bundle(text: str, registry: Registry) -> Tuple[MatchResult | None, floa
         ambiguity_penalty = 1
 
     raw = max(0, top.score - ambiguity_penalty)
-    confidence = min(1.0, raw / 10.0)
+    confidence = min(1.0, raw / 7.0)  # Adjusted to 7.0 for reasonable confidence scores
     return top, confidence
