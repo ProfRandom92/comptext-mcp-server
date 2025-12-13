@@ -1,0 +1,19 @@
+name: "NL→CompText Compiler Task"
+description: "Work items for the GitHub Agent to implement NL→CompText compiler features"
+title: "[NL2CT] "
+labels: ["nl2comptext", "agent"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be implemented?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Define measurable success conditions.
+    validations:
+      required: true

@@ -26,5 +26,10 @@ Fixes # (issue)
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing unit tests pass locally with my changes
 
+## Guardrails (for NL→CompText changes)
+- [ ] No invented IDs (must exist in bundles.yaml)
+- [ ] Deterministic output (same input → same DSL)
+- [ ] Low confidence → clarification question
+
 ## Screenshots (if applicable)
 Add screenshots to help explain your changes.
