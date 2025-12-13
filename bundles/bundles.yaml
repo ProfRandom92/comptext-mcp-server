@@ -1,0 +1,125 @@
+version: "1.0"
+format: "comptext-bundles"
+
+profiles:
+  - id: "profile.dev.v1"
+    name: "Developer Default"
+    expansion:
+      - "@MODEL_CONFIG[temperature=0.7, max_tokens=500]"
+      - "@CHAIN[steps=[analyze, summarize, format]]"
+      - "@PROMPT_OPT[goal=concise, preserve_meaning=true]"
+
+  - id: "profile.audit.v1"
+    name: "Security / Audit Default"
+    expansion:
+      - "@MODEL_CONFIG[temperature=0.4, max_tokens=900]"
+      - "@CHAIN[steps=[analyze, risk_assess, recommend, format]]"
+      - "@PROMPT_OPT[goal=precise, preserve_meaning=true]"
+
+  - id: "profile.exec.v1"
+    name: "Executive Default"
+    expansion:
+      - "@MODEL_CONFIG[temperature=0.3, max_tokens=650]"
+      - "@CHAIN[steps=[analyze, summarize, decide, format]]"
+      - "@PROMPT_OPT[goal=executive, preserve_meaning=true]"
+
+bundles:
+  - id: "code.perfopt.v1"
+    domain: "code"
+    task: "optimize"
+    match:
+      keywords_any: ["performance","slow","bottleneck","optimize","benchmark","runtime","memory"]
+    expansion:
+      - "@CODE_ANALYZE[perf_bottleneck]"
+      - "@CODE_OPT[explain=detail, bench=compare]"
+
+  - id: "code.review.v1"
+    domain: "code"
+    task: "review"
+    match:
+      keywords_any: ["review","best practices","clean up","maintainability","readability","production-ready"]
+    expansion:
+      - "@CODE_ANALYZE[security, style]"
+
+  - id: "code.debug.v1"
+    domain: "code"
+    task: "debug"
+    match:
+      keywords_any: ["debug","error","trace","stack trace","fails","bug"]
+    expansion:
+      - "@DEBUG[trace=true, breakpoints=auto]"
+
+  - id: "code.refactor.solid.v1"
+    domain: "code"
+    task: "refactor"
+    match:
+      keywords_any: ["refactor","restructure","clean architecture","solid","without changing behavior"]
+    expansion:
+      - "@REFACTOR[pattern=solid, tests=generate, docs=update]"
+
+  - id: "sec.scan.highfix.v1"
+    domain: "security"
+    task: "scan"
+    match:
+      keywords_any: ["security","vulnerability","unsafe","injection","xss","cve","owasp"]
+    expansion:
+      - "@SEC_SCAN[type=code, severity=high, fix=suggest]"
+
+  - id: "doc.api.md.examples.v1"
+    domain: "docs"
+    task: "generate"
+    match:
+      keywords_any: ["documentation","docs","markdown","api docs","readme","examples"]
+    expansion:
+      - "@DOC_GEN[api, format=markdown, include_examples=true]"
+
+  - id: "doc.api.openapi.full.v1"
+    domain: "docs"
+    task: "generate"
+    match:
+      keywords_any: ["openapi","swagger","spec","endpoints","auth schemes"]
+    expansion:
+      - "@DOC_GEN[type=api, format=openapi, examples=true, auth_schemes=true]"
+
+  - id: "doc.changelog.md.v1"
+    domain: "docs"
+    task: "changelog"
+    match:
+      keywords_any: ["changelog","release notes","since","breaking changes","version"]
+    expansion:
+      - "@CHANGELOG[format=markdown, since=v3.0.0, categorize=true, breaking_changes=highlight]"
+
+  - id: "devops.k8s.cicd.full.v1"
+    domain: "devops"
+    task: "deploy"
+    match:
+      keywords_any: ["ci/cd","github actions","pipeline","kubernetes","helm","deploy","docker","production"]
+    expansion:
+      - "@CI_CD[provider=github_actions, tests=true, coverage=true, docker_build=true, release=true]"
+      - "@DEPLOY[target=kubernetes, helm=true, envs=[staging, prod], rollback=true]"
+
+  - id: "viz.dashboard.react.pro.v1"
+    domain: "viz"
+    task: "dashboard"
+    match:
+      keywords_any: ["dashboard","react","tailwind","charts","filters","export"]
+    expansion:
+      - "@DASHBOARD[layout=grid, theme=professional, responsive=true]"
+
+  - id: "ml.automl.classification.f1.v1"
+    domain: "ml"
+    task: "train_evaluate"
+    match:
+      keywords_any: ["automl","classification","f1","model selection","cross validation"]
+    expansion:
+      - "@AUTOML[task=classification, metric=f1, cv=5, models=[rf, xgb, lgbm], optimize=hyperparams]"
+      - "@MODEL_EVAL[plots=[roc, pr, confusion, calibration], export=true]"
+
+  - id: "ml.featureeng.select.v1"
+    domain: "ml"
+    task: "feature_engineering"
+    match:
+      keywords_any: ["feature engineering","feature selection","recursive","interactions","polynomial"]
+    expansion:
+      - "@FEATURE_ENG[auto=true, interactions=2, polynomials=2]"
+      - "@FEATURE_SELECT[method=recursive, n=20]"

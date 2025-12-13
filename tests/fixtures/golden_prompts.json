@@ -1,0 +1,13 @@
+[
+  { "text": "Review this code and improve readability.", "expected_bundle": "code.review.v1" },
+  { "text": "This function is slow, find bottlenecks and optimize it.", "expected_bundle": "code.perfopt.v1" },
+  { "text": "Help me debug this error and trace what is going wrong.", "expected_bundle": "code.debug.v1" },
+  { "text": "Scan this code for high-risk security vulnerabilities and suggest fixes.", "expected_bundle": "sec.scan.highfix.v1" },
+  { "text": "Generate API documentation in markdown with examples.", "expected_bundle": "doc.api.md.examples.v1" },
+  { "text": "Create an OpenAPI (Swagger) spec with examples and auth schemes.", "expected_bundle": "doc.api.openapi.full.v1" },
+  { "text": "Create a changelog since the last release and highlight breaking changes.", "expected_bundle": "doc.changelog.md.v1" },
+  { "text": "Set up GitHub Actions CI/CD and deploy to Kubernetes with Helm.", "expected_bundle": "devops.k8s.cicd.full.v1" },
+  { "text": "Build a professional React dashboard with charts and filters.", "expected_bundle": "viz.dashboard.react.pro.v1" },
+  { "text": "Train an AutoML classifier optimized for F1 and export evaluation plots.", "expected_bundle": "ml.automl.classification.f1.v1" },
+  { "text": "Do feature engineering and select the top features recursively.", "expected_bundle": "ml.featureeng.select.v1" }
+]
