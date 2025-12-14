@@ -1,12 +1,8 @@
 """Test Suite für CompText MCP Server"""
 
 import pytest
-import sys
 import os
 from unittest.mock import patch
-
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from comptext_mcp.notion_client import (
     get_all_modules,
