@@ -1,20 +1,56 @@
-FROM python:3.11-slim
+# Multi-stage build for optimized REST API image
+FROM python:3.11-slim as builder
 
 WORKDIR /app
 
-# Install dependencies
-COPY requirements-rest.txt .
-RUN pip install --no-cache-dir -r requirements-rest.txt
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy source
-COPY src/ /app/src/
-COPY rest_api_wrapper.py /app/
+# Copy requirements and install
+COPY requirements.txt requirements-rest.txt .
+RUN pip install --user --no-cache-dir --no-warn-script-location -r requirements-rest.txt
 
-# Set Python path
-ENV PYTHONPATH=/app/src
+# Final stage
+FROM python:3.11-slim
+
+# Add metadata
+LABEL maintainer="ProfRandom92 <159939812+ProfRandom92@users.noreply.github.com>"
+LABEL description="CompText REST API Wrapper"
+LABEL version="1.0.0"
+
+WORKDIR /app
+
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
+
+# Copy dependencies from builder
+COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
+
+# Copy source files
+COPY --chown=appuser:appuser src/ /app/src/
+COPY --chown=appuser:appuser rest_api_wrapper.py /app/
+
+# Set environment
+ENV PATH=/home/appuser/.local/bin:$PATH
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Switch to non-root user
+USER appuser
 
 # Expose port
 EXPOSE 8000
 
-# Run
-CMD ["uvicorn", "rest_api_wrapper:app", "--host", "0.0.0.0", "--port", "8000"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"
+
+# Run with production settings
+CMD ["python", "-m", "uvicorn", "rest_api_wrapper:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--workers", "1", \
+     "--log-level", "info"]
