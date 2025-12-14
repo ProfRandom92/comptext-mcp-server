@@ -1,7 +1,7 @@
 """CompText MCP Server - Production Ready"""
 import asyncio
 import logging
-from typing import Any, Sequence
+from typing import Any, Sequence, Dict, List
 from mcp.server import Server
 from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 from pydantic import AnyUrl
@@ -31,7 +31,7 @@ server = Server("comptext-codex")
 
 
 @server.list_tools()
-async def list_tools() -> list[Tool]:
+async def list_tools() -> List[Tool]:
     """List available CompText tools"""
     return [
         Tool(

@@ -30,6 +30,7 @@ from comptext_mcp.notion_client import (
 )
 from comptext_mcp.constants import MODULE_MAP, MAX_SEARCH_RESULTS
 from comptext_mcp.utils import validate_page_id, validate_query_string
+from comptext_mcp.metrics import track_performance, get_metrics, reset_metrics
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -58,6 +59,7 @@ app.add_middleware(
 
 @app.get("/")
 @limiter.limit("60/minute")
+@track_performance("root")
 async def root(request: Request):
     return {
         "name": "CompText Codex API",
@@ -70,6 +72,7 @@ async def root(request: Request):
             "by_tag": "/api/tags/{tag}",
             "by_type": "/api/types/{type}",
             "statistics": "/api/statistics",
+            "metrics": "/api/metrics",
             "health": "/health",
             "docs": "/docs"
         }
@@ -78,6 +81,7 @@ async def root(request: Request):
 
 @app.get("/health")
 @limiter.limit("120/minute")
+@track_performance("health")
 async def health_check(request: Request):
     try:
         modules = get_all_modules()
@@ -96,6 +100,7 @@ async def health_check(request: Request):
 
 @app.get("/api/modules")
 @limiter.limit("30/minute")
+@track_performance("list_modules")
 async def list_modules(request: Request):
     try:
         modules = get_all_modules()
@@ -244,6 +249,27 @@ async def clear_cache_endpoint(request: Request):
     try:
         clear_cache()
         return {"status": "success", "message": "Cache cleared"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/metrics")
+@limiter.limit("30/minute")
+async def get_metrics_endpoint(request: Request):
+    """Get server performance metrics"""
+    try:
+        return get_metrics()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/metrics/reset")
+@limiter.limit("5/minute")
+async def reset_metrics_endpoint(request: Request):
+    """Reset performance metrics"""
+    try:
+        reset_metrics()
+        return {"status": "success", "message": "Metrics reset"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
