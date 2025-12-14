@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install
-COPY requirements-rest.txt .
+COPY requirements.txt requirements-rest.txt .
 RUN pip install --user --no-cache-dir --no-warn-script-location -r requirements-rest.txt
 
 # Final stage
