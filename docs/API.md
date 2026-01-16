@@ -1,8 +1,52 @@
 # API Documentation
 
-## REST API Endpoints
+Es gibt zwei HTTP APIs:
 
-Base URL: `http://localhost:8000`
+1. **Compiler API** (`mcp_server.py`) - Port 10000 - Natural Language zu DSL
+2. **Codex API** (`rest_api_wrapper.py`) - Port 8000 - Notion Codex Zugriff
+
+## Compiler API (Port 10000)
+
+Base URL: `http://localhost:10000`
+
+### Compile Natural Language to DSL
+
+```bash
+POST /compile
+```
+
+Request Body:
+```json
+{
+  "text": "Review this code and improve readability",
+  "audience": "dev",
+  "mode": "bundle_only",
+  "return_mode": "dsl_plus_confidence"
+}
+```
+
+Parameters:
+- `text` (required): Natural language request
+- `audience` (optional): dev|audit|exec (default: dev)
+- `mode` (optional): bundle_only|allow_inline_fallback (default: bundle_only)
+- `return_mode` (optional): dsl_only|dsl_plus_confidence|dsl_plus_explanation (default: dsl_plus_confidence)
+
+Response:
+```json
+{
+  "dsl": "use:profile.dev.v1\nuse:code.review.v1",
+  "confidence": 0.71
+}
+```
+
+Bei niedriger Konfidenz (<0.65):
+```json
+{
+  "dsl": "",
+  "confidence": 0.0,
+  "clarification": "Meinst du Code-Review, Performance-Optimierung, Debugging, Security-Scan oder Dokumentation? Bitte wähle eines."
+}
+```
 
 ### Health Check
 
@@ -14,103 +58,56 @@ Returns:
 ```json
 {
   "status": "healthy",
-  "notion_connected": true,
-  "modules_count": 150
+  "registry_loaded": true
 }
 ```
 
-### List All Modules
+### Server Status
 
 ```bash
-GET /api/modules
+GET /
 ```
 
-Returns all modules grouped by type.
+Returns server information and available endpoints.
 
-### Get Specific Module
+### Interactive Documentation
 
+- Swagger UI: http://localhost:10000/docs
+- ReDoc: http://localhost:10000/redoc
+
+## Codex API (Port 8000)
+
+Base URL: `http://localhost:8000`
+
+Siehe `rest_api_wrapper.py` für vollständige Notion Codex API mit:
+- `/api/modules` - Liste Module
+- `/api/search` - Suche im Codex
+- `/api/command/{page_id}` - Lade Seiteninhalt
+- `/api/tags/{tag}` - Filtere nach Tag
+- `/api/types/{type}` - Filtere nach Typ
+- `/api/statistics` - Codex Statistiken
+
+**Hinweis:** Benötigt `NOTION_API_TOKEN` Environment Variable.
+
+## MCP Server (Stdio)
+
+Der native MCP Server bietet alle Tools via stdio:
+
+**Compiler Tools:**
+1. **nl_to_comptext** - Natural Language zu CompText DSL konvertieren
+
+**Codex Tools:**
+2. **list_modules** - Liste alle Module
+3. **get_module** - Lade spezifisches Modul
+4. **get_command** - Lade Seiteninhalt
+5. **search** - Durchsuche Codex
+6. **get_by_tag** - Filtere nach Tag
+7. **get_by_type** - Filtere nach Typ
+8. **get_statistics** - Zeige Statistiken
+
+Nutzung:
 ```bash
-GET /api/modules/{module}
+python -m comptext_mcp.server
 ```
 
-Parameters:
-- `module`: Module letter (A-M) or full name
-
-Example:
-```bash
-curl http://localhost:8000/api/modules/B
-```
-
-### Search
-
-```bash
-GET /api/search?query={query}&max_results={limit}
-```
-
-Parameters:
-- `query`: Search term (required)
-- `max_results`: Max results (1-100, default: 20)
-
-Example:
-```bash
-curl "http://localhost:8000/api/search?query=docker&max_results=10"
-```
-
-### Get Command
-
-```bash
-GET /api/command/{page_id}
-```
-
-Returns full page content.
-
-### Filter by Tag
-
-```bash
-GET /api/tags/{tag}
-```
-
-Valid tags: Core, Erweitert, Optimierung, Visualisierung, Analyse
-
-### Filter by Type
-
-```bash
-GET /api/types/{type}
-```
-
-Valid types: Dokumentation, Beispiel, Test, Referenz
-
-### Statistics
-
-```bash
-GET /api/statistics
-```
-
-Returns statistics about the codex.
-
-### Clear Cache
-
-```bash
-POST /api/cache/clear
-```
-
-Clears the LRU cache.
-
-## MCP Tools
-
-Available via MCP protocol:
-
-1. **list_modules** - List all modules
-2. **get_module** - Get module details
-3. **get_command** - Load page content
-4. **search** - Search codex
-5. **get_by_tag** - Filter by tag
-6. **get_by_type** - Filter by type
-7. **get_statistics** - Show statistics
-
-## Interactive Documentation
-
-When REST API is running:
-
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+Integration in Claude Desktop siehe README.md.
