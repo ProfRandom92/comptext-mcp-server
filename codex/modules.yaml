@@ -1,0 +1,303 @@
+version: "3.5.2"
+format: "comptext-codex"
+description: "CompText DSL Codex - Alle Module und Commands"
+
+modules:
+  # Modul A: Allgemeine Befehle
+  - id: "A"
+    name: "Modul A: Allgemeine Befehle"
+    description: "Grundlegende Befehle für alle Kontexte"
+    type: "Core"
+    tags: ["Core", "Basis"]
+    commands:
+      - id: "A.ANALYZE"
+        syntax: "@ANALYZE[target, depth=shallow|medium|deep]"
+        description: "Analysiere Code, Daten oder Systeme"
+        examples:
+          - "@ANALYZE[codebase, depth=deep]"
+          - "@ANALYZE[database_schema, depth=medium]"
+
+      - id: "A.SUMMARIZE"
+        syntax: "@SUMMARIZE[content, style=brief|detailed]"
+        description: "Fasse Inhalte zusammen"
+        examples:
+          - "@SUMMARIZE[documentation, style=brief]"
+
+      - id: "A.FORMAT"
+        syntax: "@FORMAT[output, format=json|yaml|markdown|table]"
+        description: "Formatiere Ausgabe"
+        examples:
+          - "@FORMAT[output, format=markdown]"
+
+  # Modul B: Programmierung
+  - id: "B"
+    name: "Modul B: Programmierung"
+    description: "Code-Entwicklung und -Analyse"
+    type: "Development"
+    tags: ["Code", "Development"]
+    commands:
+      - id: "B.CODE_ANALYZE"
+        syntax: "@CODE_ANALYZE[aspect, ...]"
+        description: "Analysiere Code auf verschiedene Aspekte"
+        examples:
+          - "@CODE_ANALYZE[security, style]"
+          - "@CODE_ANALYZE[perf_bottleneck]"
+
+      - id: "B.CODE_OPT"
+        syntax: "@CODE_OPT[explain=detail, bench=compare]"
+        description: "Optimiere Code für Performance"
+        examples:
+          - "@CODE_OPT[explain=detail, bench=compare]"
+
+      - id: "B.DEBUG"
+        syntax: "@DEBUG[trace=bool, breakpoints=auto|manual]"
+        description: "Debug-Unterstützung"
+        examples:
+          - "@DEBUG[trace=true, breakpoints=auto]"
+
+      - id: "B.REFACTOR"
+        syntax: "@REFACTOR[pattern, tests=generate, docs=update]"
+        description: "Code-Refactoring"
+        examples:
+          - "@REFACTOR[pattern=solid, tests=generate, docs=update]"
+          - "@REFACTOR[pattern=mvc, tests=keep]"
+
+  # Modul C: Visualisierung
+  - id: "C"
+    name: "Modul C: Visualisierung"
+    description: "Datenvisualisierung und Dashboards"
+    type: "Visualization"
+    tags: ["Visualization", "Charts", "Dashboards"]
+    commands:
+      - id: "C.CHART"
+        syntax: "@CHART[type, data, options]"
+        description: "Erstelle Charts und Grafiken"
+        examples:
+          - "@CHART[type=line, data=timeseries, responsive=true]"
+          - "@CHART[type=bar, data=categories, stacked=true]"
+
+      - id: "C.DASHBOARD"
+        syntax: "@DASHBOARD[layout, theme, responsive]"
+        description: "Erstelle Dashboards"
+        examples:
+          - "@DASHBOARD[layout=grid, theme=professional, responsive=true]"
+          - "@DASHBOARD[layout=sidebar, theme=dark, interactive=true]"
+
+  # Modul D: KI-Steuerung
+  - id: "D"
+    name: "Modul D: KI-Steuerung"
+    description: "LLM-Konfiguration und -Steuerung"
+    type: "AI"
+    tags: ["AI", "ML", "LLM"]
+    commands:
+      - id: "D.MODEL_CONFIG"
+        syntax: "@MODEL_CONFIG[temperature, max_tokens, ...]"
+        description: "Konfiguriere LLM-Parameter"
+        examples:
+          - "@MODEL_CONFIG[temperature=0.7, max_tokens=500]"
+          - "@MODEL_CONFIG[temperature=0.3, max_tokens=1000, top_p=0.9]"
+
+      - id: "D.CHAIN"
+        syntax: "@CHAIN[steps=[...]]"
+        description: "Definiere Verarbeitungs-Pipeline"
+        examples:
+          - "@CHAIN[steps=[analyze, summarize, format]]"
+          - "@CHAIN[steps=[extract, transform, load]]"
+
+      - id: "D.PROMPT_OPT"
+        syntax: "@PROMPT_OPT[goal, preserve_meaning]"
+        description: "Optimiere Prompt-Struktur"
+        examples:
+          - "@PROMPT_OPT[goal=concise, preserve_meaning=true]"
+          - "@PROMPT_OPT[goal=creative, preserve_meaning=false]"
+
+  # Modul E: Dokumentation
+  - id: "E"
+    name: "Modul E: Dokumentation"
+    description: "Automatische Dokumentationsgenerierung"
+    type: "Documentation"
+    tags: ["Documentation", "API", "README"]
+    commands:
+      - id: "E.DOC_GEN"
+        syntax: "@DOC_GEN[type, format, options]"
+        description: "Generiere Dokumentation"
+        examples:
+          - "@DOC_GEN[api, format=markdown, include_examples=true]"
+          - "@DOC_GEN[type=api, format=openapi, examples=true, auth_schemes=true]"
+
+      - id: "E.CHANGELOG"
+        syntax: "@CHANGELOG[format, since, categorize, breaking_changes]"
+        description: "Generiere Changelog"
+        examples:
+          - "@CHANGELOG[format=markdown, since=v3.0.0, categorize=true, breaking_changes=highlight]"
+
+  # Modul F: Testing
+  - id: "F"
+    name: "Modul F: Testing"
+    description: "Automatisierte Tests und Qualitätssicherung"
+    type: "Testing"
+    tags: ["Testing", "QA", "Coverage"]
+    commands:
+      - id: "F.TEST_GEN"
+        syntax: "@TEST_GEN[type, coverage, framework]"
+        description: "Generiere Tests"
+        examples:
+          - "@TEST_GEN[type=unit, coverage=80, framework=pytest]"
+          - "@TEST_GEN[type=integration, coverage=90, framework=jest]"
+
+      - id: "F.TEST_RUN"
+        syntax: "@TEST_RUN[suite, report]"
+        description: "Führe Tests aus"
+        examples:
+          - "@TEST_RUN[suite=all, report=detailed]"
+
+  # Modul G: DevOps
+  - id: "G"
+    name: "Modul G: DevOps"
+    description: "CI/CD und Deployment"
+    type: "DevOps"
+    tags: ["DevOps", "CI/CD", "Deployment"]
+    commands:
+      - id: "G.CI_CD"
+        syntax: "@CI_CD[provider, tests, coverage, docker_build, release]"
+        description: "Setup CI/CD Pipeline"
+        examples:
+          - "@CI_CD[provider=github_actions, tests=true, coverage=true, docker_build=true, release=true]"
+          - "@CI_CD[provider=gitlab_ci, tests=true, docker_build=false]"
+
+      - id: "G.DEPLOY"
+        syntax: "@DEPLOY[target, helm, envs, rollback]"
+        description: "Deployment konfigurieren"
+        examples:
+          - "@DEPLOY[target=kubernetes, helm=true, envs=[staging, prod], rollback=true]"
+          - "@DEPLOY[target=aws_ecs, envs=[prod]]"
+
+  # Modul H: Security
+  - id: "H"
+    name: "Modul H: Security"
+    description: "Sicherheitsanalyse und -prüfung"
+    type: "Security"
+    tags: ["Security", "Audit", "Vulnerability"]
+    commands:
+      - id: "H.SEC_SCAN"
+        syntax: "@SEC_SCAN[type, severity, fix]"
+        description: "Security Scan durchführen"
+        examples:
+          - "@SEC_SCAN[type=code, severity=high, fix=suggest]"
+          - "@SEC_SCAN[type=dependencies, severity=medium, fix=auto]"
+
+      - id: "H.AUDIT"
+        syntax: "@AUDIT[scope, standards]"
+        description: "Security Audit"
+        examples:
+          - "@AUDIT[scope=full, standards=[owasp, cwe]]"
+
+  # Modul I: Database
+  - id: "I"
+    name: "Modul I: Database"
+    description: "Datenbank-Operationen und -Optimierung"
+    type: "Database"
+    tags: ["Database", "SQL", "Migration"]
+    commands:
+      - id: "I.DB_MIGRATE"
+        syntax: "@DB_MIGRATE[from, to, strategy]"
+        description: "Datenbank-Migration"
+        examples:
+          - "@DB_MIGRATE[from=schema_v1, to=schema_v2, strategy=safe]"
+
+      - id: "I.QUERY_OPT"
+        syntax: "@QUERY_OPT[analyze, suggest_indexes]"
+        description: "Query-Optimierung"
+        examples:
+          - "@QUERY_OPT[analyze=true, suggest_indexes=true]"
+
+  # Modul J: API
+  - id: "J"
+    name: "Modul J: API"
+    description: "API-Design und -Implementation"
+    type: "API"
+    tags: ["API", "REST", "GraphQL"]
+    commands:
+      - id: "J.API_GEN"
+        syntax: "@API_GEN[type, auth, versioning]"
+        description: "API generieren"
+        examples:
+          - "@API_GEN[type=rest, auth=jwt, versioning=true]"
+          - "@API_GEN[type=graphql, auth=oauth2]"
+
+      - id: "J.OPENAPI_SPEC"
+        syntax: "@OPENAPI_SPEC[version, examples, auth_schemes]"
+        description: "OpenAPI Spec generieren"
+        examples:
+          - "@OPENAPI_SPEC[version=3.0, examples=true, auth_schemes=true]"
+
+  # Modul K: Machine Learning
+  - id: "K"
+    name: "Modul K: Machine Learning"
+    description: "ML Model Training und Evaluation"
+    type: "ML"
+    tags: ["ML", "AI", "Training"]
+    commands:
+      - id: "K.AUTOML"
+        syntax: "@AUTOML[task, metric, cv, models, optimize]"
+        description: "AutoML Training"
+        examples:
+          - "@AUTOML[task=classification, metric=f1, cv=5, models=[rf, xgb, lgbm], optimize=hyperparams]"
+          - "@AUTOML[task=regression, metric=rmse, cv=10, models=[linear, rf, xgb]]"
+
+      - id: "K.MODEL_EVAL"
+        syntax: "@MODEL_EVAL[plots, export]"
+        description: "Model Evaluation"
+        examples:
+          - "@MODEL_EVAL[plots=[roc, pr, confusion, calibration], export=true]"
+
+      - id: "K.FEATURE_ENG"
+        syntax: "@FEATURE_ENG[auto, interactions, polynomials]"
+        description: "Feature Engineering"
+        examples:
+          - "@FEATURE_ENG[auto=true, interactions=2, polynomials=2]"
+
+      - id: "K.FEATURE_SELECT"
+        syntax: "@FEATURE_SELECT[method, n]"
+        description: "Feature Selection"
+        examples:
+          - "@FEATURE_SELECT[method=recursive, n=20]"
+
+  # Modul L: Data Processing
+  - id: "L"
+    name: "Modul L: Data Processing"
+    description: "Datenverarbeitung und ETL"
+    type: "Data"
+    tags: ["Data", "ETL", "Processing"]
+    commands:
+      - id: "L.ETL"
+        syntax: "@ETL[source, target, transform]"
+        description: "ETL Pipeline"
+        examples:
+          - "@ETL[source=csv, target=postgres, transform=clean]"
+          - "@ETL[source=api, target=s3, transform=[normalize, dedupe]]"
+
+      - id: "L.DATA_CLEAN"
+        syntax: "@DATA_CLEAN[nulls, duplicates, outliers]"
+        description: "Datenbereinigung"
+        examples:
+          - "@DATA_CLEAN[nulls=drop, duplicates=keep_first, outliers=clip]"
+
+  # Modul M: Monitoring
+  - id: "M"
+    name: "Modul M: Monitoring"
+    description: "System- und Application-Monitoring"
+    type: "Monitoring"
+    tags: ["Monitoring", "Observability", "Metrics"]
+    commands:
+      - id: "M.METRICS"
+        syntax: "@METRICS[collect, visualize, alerts]"
+        description: "Metriken sammeln und visualisieren"
+        examples:
+          - "@METRICS[collect=prometheus, visualize=grafana, alerts=true]"
+
+      - id: "M.TRACE"
+        syntax: "@TRACE[distributed, sampling]"
+        description: "Distributed Tracing"
+        examples:
+          - "@TRACE[distributed=true, sampling=0.1]"

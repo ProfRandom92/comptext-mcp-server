@@ -6,14 +6,10 @@ from pydantic import BaseModel, Field
 import uvicorn
 from typing import Optional
 
-# Set dummy environment variables if not set (for testing/HTTP wrapper)
-os.environ.setdefault("NOTION_API_TOKEN", "dummy_token_for_http_wrapper")
-os.environ.setdefault("COMPTEXT_DATABASE_ID", "dummy_database_id")
-
 # Add src to path to enable direct imports
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-# Import the actual compiler - use direct imports to avoid __init__.py loading everything
+# Import the actual compiler
 from comptext_mcp.compiler.nl_to_comptext import compile_nl_to_comptext
 from comptext_mcp.compiler.registry import load_registry
 

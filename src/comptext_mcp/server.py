@@ -7,15 +7,19 @@ from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 from pydantic import AnyUrl
 from dotenv import load_dotenv
 
-from .notion_client import (
+from .yaml_client import (
     get_all_modules,
     get_module_by_name,
     get_page_content,
     search_codex,
     get_modules_by_tag,
     get_modules_by_type,
-    NotionClientError
+    get_statistics,
+    YAMLClientError
 )
+
+# Backward compatibility alias
+NotionClientError = YAMLClientError
 
 # Load environment
 load_dotenv()

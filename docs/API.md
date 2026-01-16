@@ -79,15 +79,32 @@ Returns server information and available endpoints.
 
 Base URL: `http://localhost:8000`
 
-Siehe `rest_api_wrapper.py` für vollständige Notion Codex API mit:
-- `/api/modules` - Liste Module
-- `/api/search` - Suche im Codex
-- `/api/command/{page_id}` - Lade Seiteninhalt
+YAML-basierte Codex API mit:
+- `/api/modules` - Liste alle 13 Module
+- `/api/modules/{module_id}` - Details zu spezifischem Modul (A-M)
+- `/api/search?query=...` - Suche in Modulen und Commands
+- `/api/command/{command_id}` - Lade Command-Details (z.B. "A.ANALYZE")
 - `/api/tags/{tag}` - Filtere nach Tag
 - `/api/types/{type}` - Filtere nach Typ
 - `/api/statistics` - Codex Statistiken
 
-**Hinweis:** Benötigt `NOTION_API_TOKEN` Environment Variable.
+**Datenbasis:** `codex/modules.yaml` mit 13 Modulen und 32+ Commands
+
+### Beispiele:
+
+```bash
+# Liste alle Module
+curl http://localhost:8000/api/modules
+
+# Details zu Modul H (Security)
+curl http://localhost:8000/api/modules/H
+
+# Suche nach "security"
+curl "http://localhost:8000/api/search?query=security&max_results=10"
+
+# Command Details
+curl http://localhost:8000/api/command/H.SEC_SCAN
+```
 
 ## MCP Server (Stdio)
 

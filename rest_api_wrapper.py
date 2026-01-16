@@ -14,7 +14,7 @@ load_dotenv()
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-from comptext_mcp.notion_client import (
+from comptext_mcp.yaml_client import (
     get_all_modules,
     get_module_by_name,
     get_page_content,
@@ -22,9 +22,13 @@ from comptext_mcp.notion_client import (
     get_page_by_id,
     get_modules_by_tag,
     get_modules_by_type,
-    NotionClientError,
+    get_statistics as get_codex_statistics,
+    YAMLClientError,
     clear_cache
 )
+
+# Backward compatibility alias
+NotionClientError = YAMLClientError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -85,13 +89,13 @@ async def health_check():
         modules = get_all_modules()
         return {
             "status": "healthy",
-            "notion_connected": True,
+            "codex_loaded": True,
             "modules_count": len(modules)
         }
     except Exception as e:
         return {
             "status": "unhealthy",
-            "notion_connected": False,
+            "codex_loaded": False,
             "error": str(e)
         }
 
@@ -100,43 +104,43 @@ async def health_check():
 async def list_modules():
     try:
         modules = get_all_modules()
-        by_module = {}
-        for entry in modules:
-            modul = entry.get("modul")
-            if modul:
-                by_module.setdefault(modul, []).append(entry)
-        
-        stats = {
-            letter: {
-                "name": full_name,
-                "count": len(by_module.get(full_name, [])),
-                "entries": by_module.get(full_name, [])
+
+        # Format modules for API response
+        formatted_modules = {}
+        for module in modules:
+            formatted_modules[module["id"]] = {
+                "name": module["name"],
+                "description": module["description"],
+                "type": module.get("type"),
+                "tags": module.get("tags", []),
+                "commands_count": len(module.get("commands", [])),
+                "commands": [cmd["id"] for cmd in module.get("commands", [])]
             }
-            for letter, full_name in MODULE_MAP.items()
-        }
-        
+
         return {
-            "total_modules": len(by_module),
-            "total_entries": len(modules),
-            "modules": stats
+            "total_modules": len(modules),
+            "modules": formatted_modules
         }
-    except NotionClientError as e:
+    except (YAMLClientError, NotionClientError) as e:
         raise HTTPException(status_code=503, detail=str(e))
 
 
 @app.get("/api/modules/{module}")
 async def get_module(module: str):
     try:
-        if module in MODULE_MAP:
-            module = MODULE_MAP[module]
-        
-        entries = get_module_by_name(module)
+        module_data = get_module_by_name(module)
+        if not module_data:
+            raise HTTPException(status_code=404, detail=f"Module {module} not found")
+
         return {
-            "module": module,
-            "count": len(entries),
-            "entries": entries
+            "module": module_data["id"],
+            "name": module_data["name"],
+            "description": module_data["description"],
+            "type": module_data.get("type"),
+            "tags": module_data.get("tags", []),
+            "commands": module_data.get("commands", [])
         }
-    except NotionClientError as e:
+    except (YAMLClientError, NotionClientError) as e:
         raise HTTPException(status_code=503, detail=str(e))
 
 
@@ -200,30 +204,9 @@ async def get_by_type(typ: str):
 @app.get("/api/statistics")
 async def get_statistics():
     try:
-        modules = get_all_modules()
-        by_module = {}
-        by_type = {}
-        by_tag = {}
-        
-        for entry in modules:
-            modul = entry.get("modul")
-            if modul:
-                by_module[modul] = by_module.get(modul, 0) + 1
-            
-            typ = entry.get("typ")
-            if typ:
-                by_type[typ] = by_type.get(typ, 0) + 1
-            
-            for tag in entry.get("tags", []):
-                by_tag[tag] = by_tag.get(tag, 0) + 1
-        
-        return {
-            "total_entries": len(modules),
-            "by_module": by_module,
-            "by_type": by_type,
-            "by_tag": by_tag
-        }
-    except NotionClientError as e:
+        stats = get_codex_statistics()
+        return stats
+    except (YAMLClientError, NotionClientError) as e:
         raise HTTPException(status_code=503, detail=str(e))
 
 

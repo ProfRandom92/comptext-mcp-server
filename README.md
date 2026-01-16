@@ -5,12 +5,14 @@ Ein MCP (Model Context Protocol) Server für CompText DSL - mit Natural Language
 ## 📋 Features
 
 - ✅ **Natural Language zu CompText DSL Compiler** - Konvertiert natürliche Sprache in kanonisches CompText
-- ✅ **Bundle-basiertes Matching** - Verwendet vordefinierte Bundles aus `bundles.yaml`
+- ✅ **Bundle-basiertes Matching** - Verwendet vordefinierte Bundles aus `bundles/bundles.yaml`
+- ✅ **YAML-basierter Codex** - Vollständiges Modul-System in `codex/modules.yaml`
 - ✅ **Confidence Scoring** - Berechnet Konfidenz-Score für Matches (0-1)
 - ✅ **Audience Profiles** - Unterstützt dev/audit/exec Profile
 - ✅ **FastAPI HTTP Wrapper** - REST API für einfache Integration
 - ✅ **Stdio MCP Server** - Natives MCP-Protokoll für direkte Integration
-- ✅ **Notion Integration** - Zugriff auf CompText Codex via Notion API
+- ✅ **Keine externen Dependencies** - Alles lokal in YAML-Dateien
+- ✅ **13 Module, 32+ Commands** - Vollständiger CompText DSL Codex
 - ✅ **Health Check Endpoint** - Monitoring und Status
 - ✅ **Automatisches Deployment** - Bereit für Render.com/Railway/etc.
 
@@ -69,14 +71,17 @@ Diese URL verwendest du dann in deiner MCP-Client-Konfiguration.
 
 ## 🔧 Environment Variables
 
-Für Notion-Integration (optional für HTTP API, required für MCP Server):
+**Keine Environment Variables erforderlich!**
 
+Alle Daten sind lokal gespeichert:
+- Compiler Bundles: `bundles/bundles.yaml`
+- Codex Module: `codex/modules.yaml`
+
+Optional:
 ```bash
-NOTION_API_TOKEN=your_notion_token
-COMPTEXT_DATABASE_ID=your_database_id
+COMPTEXT_CODEX_PATH=codex/modules.yaml  # Standard-Pfad zum Codex
+PORT=10000                               # HTTP Server Port
 ```
-
-**Hinweis:** Der HTTP API Wrapper (`mcp_server.py`) funktioniert auch ohne Notion-Token, da er nur den Compiler verwendet. Der volle MCP Server benötigt die Notion-Integration.
 
 ## 🔧 MCP Client Konfiguration
 
@@ -95,15 +100,13 @@ Für Stdio MCP Server in Claude Desktop:
   "mcpServers": {
     "comptext": {
       "command": "python",
-      "args": ["-m", "comptext_mcp.server"],
-      "env": {
-        "NOTION_API_TOKEN": "your_token",
-        "COMPTEXT_DATABASE_ID": "your_db_id"
-      }
+      "args": ["-m", "comptext_mcp.server"]
     }
   }
 }
 ```
+
+**Hinweis:** Stelle sicher, dass das `comptext-mcp-server` Verzeichnis im PYTHONPATH ist oder verwende den vollen Pfad.
 
 Für direkte MCP-Integration:
 
