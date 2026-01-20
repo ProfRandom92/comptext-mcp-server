@@ -1,6 +1,11 @@
-mcp>=1.0.0
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-pydantic>=2.0.0
-PyYAML>=6.0
-python-dotenv>=1.0.0
+# MCP SDK - Latest version
+mcp>=1.1.0
+
+# Optional REST API support
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.10.0
+
+# Core dependencies
+PyYAML>=6.0.2
+python-dotenv>=1.0.1

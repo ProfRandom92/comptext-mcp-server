@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "comptext-codex": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/ABSOLUTER/PFAD/ZU/comptext-mcp-server",
+        "run",
+        "comptext-mcp-server"
+      ],
+      "env": {
+        "NOTION_API_TOKEN": "dein_notion_token_hier",
+        "COMPTEXT_DATABASE_ID": "0e038c9b52c5466694dbac288280dd93",
+        "LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
