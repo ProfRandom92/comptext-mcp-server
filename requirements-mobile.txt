@@ -1,0 +1,20 @@
+# CompText Mobile Agent Dependencies
+# Install with: pip install -r requirements-mobile.txt
+
+# Core dependencies (from base requirements.txt)
+-r requirements.txt
+
+# HTTP client for Ollama API
+httpx>=0.25.0
+
+# Additional mobile-specific dependencies
+# Note: DroidRun is installed separately via git clone
+# Note: ADB is a system dependency (Android SDK Platform Tools)
+
+# Optional: For advanced UI analysis
+# pillow>=10.0.0  # Image processing for screenshots
+# opencv-python>=4.8.0  # Advanced screen analysis
+
+# Development dependencies (optional)
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
