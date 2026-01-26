@@ -16,7 +16,7 @@ from comptext_mcp.compiler.registry import load_registry
 # FastAPI App initialisieren
 app = FastAPI(
     title="CompText MCP Server",
-    version="3.5.2",
+    version="2.0.0",
     description="HTTP wrapper for CompText Natural Language to DSL compiler"
 )
 
@@ -47,7 +47,7 @@ async def root():
     """Server Status Endpoint"""
     return {
         "status": "CompText MCP Server running",
-        "version": "3.5.2",
+        "version": "2.0.0",
         "description": "Natural Language to CompText DSL compiler",
         "registry_loaded": registry is not None,
         "endpoints": {
@@ -120,6 +120,7 @@ async def compile_nl_to_dsl(request: CompileRequest):
                     try:
                         response["confidence"] = float(conf_str)
                     except ValueError:
+                        # If confidence cannot be parsed as a float, omit it rather than failing the request
                         pass
                 elif line.startswith("clarification:"):
                     clar = line.replace("clarification:", "").strip()

@@ -9,8 +9,7 @@
         "comptext-mcp-server"
       ],
       "env": {
-        "NOTION_API_TOKEN": "dein_notion_token_hier",
-        "COMPTEXT_DATABASE_ID": "0e038c9b52c5466694dbac288280dd93",
+        "COMPTEXT_CODEX_PATH": "/ABSOLUTER/PFAD/ZU/comptext-mcp-server/codex/modules.yaml",
         "LOG_LEVEL": "INFO"
       }
     }
