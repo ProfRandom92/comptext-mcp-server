@@ -2,113 +2,225 @@
 
 First off, thank you for considering contributing to CompText MCP Server! 🎉
 
-## Code of Conduct
+## 📋 Table of Contents
 
-This project and everyone participating in it is governed by our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+- [Code of Conduct](#code-of-conduct)
+- [How Can I Contribute?](#how-can-i-contribute)
+- [Development Setup](#development-setup)
+- [Pull Request Process](#pull-request-process)
+- [Coding Standards](#coding-standards)
+- [Testing Guidelines](#testing-guidelines)
+- [Documentation](#documentation)
 
-## How Can I Contribute?
+## 📜 Code of Conduct
+
+This project adheres to a Code of Conduct that all contributors are expected to follow. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
+
+## 🤝 How Can I Contribute?
 
 ### Reporting Bugs
 
-Before creating bug reports, please check the existing issues. When you create a bug report, include as many details as possible:
+Before creating bug reports, please check the issue tracker as you might find that you don't need to create one. When you are creating a bug report, please include as many details as possible:
 
-- Use a clear and descriptive title
-- Describe the exact steps to reproduce the problem
-- Provide specific examples
-- Describe the behavior you observed and what you expected
-- Include logs and error messages
-- Mention your environment (OS, Python version, platform)
+- **Use a clear and descriptive title**
+- **Describe the exact steps to reproduce the problem**
+- **Provide specific examples**
+- **Describe the behavior you observed and what you expected**
+- **Include screenshots if relevant**
+- **Specify your environment** (OS, Python version, MCP version)
 
 ### Suggesting Enhancements
 
-Enhancement suggestions are tracked as GitHub issues. When creating an enhancement suggestion:
+Enhancement suggestions are tracked as GitHub issues. When creating an enhancement suggestion, please include:
 
-- Use a clear and descriptive title
-- Provide a detailed description of the suggested enhancement
-- Explain why this enhancement would be useful
-- List any alternative solutions you've considered
+- **A clear and descriptive title**
+- **A detailed description of the proposed functionality**
+- **Examples of how the feature would be used**
+- **Why this enhancement would be useful**
 
-### Pull Requests
+### Your First Code Contribution
 
-1. Fork the repo and create your branch from `main`
-2. Install development dependencies: `pip install -r requirements-dev.txt`
-3. Set up pre-commit hooks: `pre-commit install`
-4. Make your changes
-5. Add tests for your changes
-6. Ensure all tests pass: `pytest tests/ -v`
-7. Format your code: `black src/ tests/`
-8. Lint your code: `flake8 src/ tests/`
-9. Update documentation if needed
-10. Commit your changes with a descriptive message
-11. Push to your fork and submit a pull request
+Unsure where to begin? Look for issues labeled:
+- `good first issue` - Good for newcomers
+- `help wanted` - Extra attention needed
+- `documentation` - Improvements to docs
 
-## Development Setup
+## 🛠️ Development Setup
+
+### Prerequisites
+
+- Python 3.10 or higher
+- Git
+- Optional: uv for faster package management
+
+### Setup Steps
 
 ```bash
+# Fork the repository on GitHub
+
 # Clone your fork
 git clone https://github.com/YOUR_USERNAME/comptext-mcp-server.git
 cd comptext-mcp-server
 
+# Add upstream remote
+git remote add upstream https://github.com/ProfRandom92/comptext-mcp-server.git
+
 # Create virtual environment
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements-dev.txt
+# Install development dependencies
+pip install -e ".[dev]"
 
-# Set up pre-commit hooks
+# Install pre-commit hooks
 pre-commit install
-
-# Configure environment
-cp .env.example .env
-# Add your NOTION_API_TOKEN
-
-# Run tests
-pytest tests/ -v
 ```
 
-## Coding Standards
+## 🔄 Pull Request Process
 
-### Python Style Guide
+### Branch Naming
 
-- Follow [PEP 8](https://www.python.org/dev/peps/pep-0008/)
-- Use [Black](https://black.readthedocs.io/) for code formatting
-- Maximum line length: 127 characters
-- Use type hints where applicable
-- Write docstrings for all public functions/classes
-
-### Example
-
-```python
-def get_module_by_name(module_name: str) -> List[Dict[str, Any]]:
-    """Load all entries of a specific module.
-    
-    Args:
-        module_name: Name of the module to load
-        
-    Returns:
-        List of module entries
-        
-    Raises:
-        NotionClientError: If API request fails
-    """
-    # Implementation
-```
+Use descriptive branch names:
+- `feature/add-websocket-support`
+- `bugfix/fix-compiler-crash`
+- `docs/update-api-documentation`
+- `refactor/improve-error-handling`
 
 ### Commit Messages
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+Follow conventional commits:
+- `feat: add WebSocket support for real-time compilation`
+- `fix: resolve crash when compiling empty input`
+- `docs: update API documentation with examples`
+- `refactor: simplify error handling logic`
+- `test: add tests for NL compiler edge cases`
+- `chore: update dependencies to latest versions`
 
-```
-feat: add new search filter for tags
-fix: resolve pagination issue in list_modules
-docs: update API documentation
-test: add tests for search functionality
-refactor: improve error handling in notion_client
-chore: update dependencies
+### Pull Request Steps
+
+1. **Create a new branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make your changes**
+   - Write clear, documented code
+   - Add tests for new functionality
+   - Update documentation
+
+3. **Run quality checks**
+   ```bash
+   # Format code
+   black src/ tests/
+   isort src/ tests/
+   
+   # Type checking
+   mypy src/
+   
+   # Linting
+   flake8 src/ tests/
+   
+   # Tests
+   pytest tests/ -v --cov
+   ```
+
+4. **Commit your changes**
+   ```bash
+   git add .
+   git commit -m "feat: add amazing feature"
+   ```
+
+5. **Push to your fork**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+6. **Open a Pull Request**
+   - Fill out the PR template completely
+   - Link related issues
+   - Request review from maintainers
+
+### PR Review Process
+
+- Maintainers will review your PR within 2-3 business days
+- Address any requested changes
+- Once approved, a maintainer will merge your PR
+
+## 💻 Coding Standards
+
+### Python Style Guide
+
+- Follow [PEP 8](https://pep8.org/)
+- Use [Black](https://github.com/psf/black) for code formatting (line length: 127)
+- Use [isort](https://pycqa.github.io/isort/) for import sorting
+- Use type hints for all functions
+
+### Code Quality
+
+```python
+# Good: Clear, documented, typed
+def compile_nl_to_dsl(
+    text: str,
+    audience: str = "dev",
+    confidence_threshold: float = 0.65
+) -> dict[str, Any]:
+    """Compile natural language to CompText DSL.
+    
+    Args:
+        text: Natural language input
+        audience: Target audience (dev/audit/exec)
+        confidence_threshold: Minimum confidence score
+        
+    Returns:
+        Compiled DSL with confidence score
+        
+    Raises:
+        ValueError: If text is empty
+    """
+    if not text:
+        raise ValueError("Input text cannot be empty")
+    
+    # Implementation...
+    return {"dsl": compiled, "confidence": 0.85}
 ```
 
-## Testing
+### Error Handling
+
+- Use specific exception types
+- Provide helpful error messages
+- Log errors appropriately
+
+```python
+try:
+    result = compile_text(input_text)
+except ValueError as e:
+    logger.error(f"Invalid input: {e}")
+    raise
+except Exception as e:
+    logger.error(f"Unexpected error during compilation: {e}")
+    raise CompilerError("Compilation failed") from e
+```
+
+## 🧪 Testing Guidelines
+
+### Writing Tests
+
+- Write tests for all new features
+- Maintain >80% code coverage
+- Use descriptive test names
+
+```python
+def test_nl_compiler_handles_empty_input():
+    """Test that compiler raises ValueError for empty input."""
+    with pytest.raises(ValueError, match="Input text cannot be empty"):
+        compile_nl_to_dsl("")
+
+def test_nl_compiler_returns_high_confidence_for_clear_intent():
+    """Test compiler confidence for unambiguous requests."""
+    result = compile_nl_to_dsl("Review this code for bugs")
+    assert result["confidence"] >= 0.7
+    assert "code.review" in result["dsl"]
+```
 
 ### Running Tests
 
@@ -116,53 +228,48 @@ chore: update dependencies
 # Run all tests
 pytest tests/ -v
 
+# Run specific test file
+pytest tests/test_compiler.py -v
+
 # Run with coverage
 pytest tests/ --cov=src/comptext_mcp --cov-report=html
 
-# Run specific test
-pytest tests/test_suite.py::TestNotionClient::test_get_all_modules -v
+# View coverage report
+open htmlcov/index.html  # macOS
+# or
+xdg-open htmlcov/index.html  # Linux
 ```
 
-### Writing Tests
+## 📚 Documentation
 
-- Write tests for all new features
-- Maintain or improve code coverage
-- Use descriptive test names
-- Follow AAA pattern (Arrange, Act, Assert)
+### Code Documentation
 
-```python
-def test_search_codex_with_valid_query():
-    # Arrange
-    query = "docker"
-    max_results = 5
-    
-    # Act
-    results = search_codex(query, max_results)
-    
-    # Assert
-    assert isinstance(results, list)
-    assert len(results) <= max_results
-```
+- Document all public APIs
+- Use Google-style docstrings
+- Include examples in docstrings
 
-## Documentation
+### README Updates
 
-- Update README.md for user-facing changes
-- Update docs/ for detailed documentation
-- Add docstrings to new functions/classes
-- Include examples in documentation
+- Update README.md for new features
+- Add examples for new functionality
+- Keep documentation accurate and up-to-date
 
-## Release Process
+### API Documentation
 
-1. Update version in `src/comptext_mcp/__init__.py`
-2. Update CHANGELOG.md
-3. Create a new release on GitHub
-4. Tag the release: `git tag -a v1.1.0 -m "Release v1.1.0"`
-5. Push tags: `git push origin v1.1.0`
+- Update docs/API.md for API changes
+- Document all endpoints and parameters
+- Provide curl examples
 
-## Questions?
+## 🏆 Recognition
 
-Feel free to open an issue with your question or reach out to the maintainers.
+Contributors will be:
+- Listed in CONTRIBUTORS.md
+- Mentioned in release notes
+- Celebrated in our community
 
-## License
+## ❓ Questions?
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+- 💬 Open a [Discussion](https://github.com/ProfRandom92/comptext-mcp-server/discussions)
+- 📧 Email: 159939812+ProfRandom92@users.noreply.github.com
+
+Thank you for contributing! 🙏

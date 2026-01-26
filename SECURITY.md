@@ -1,172 +1,137 @@
 # Security Policy
 
-## Supported Versions
+## 🛡️ Supported Versions
 
-We release patches for the most recent version as needed.
+We release patches for security vulnerabilities in the following versions:
 
 | Version | Supported          |
-| ------- | ----------------- |
-| 1.x.x   | :white_check_mark: |
-| < 1.0   | :x:               |
+| ------- | ------------------ |
+| 2.0.x   | :white_check_mark: |
+| 1.0.x   | :white_check_mark: |
+| < 1.0   | :x:                |
 
-## Reporting a Vulnerability
+## 🔒 Reporting a Vulnerability
 
-If you discover a security vulnerability, please send an e-mail to the maintainers at 159939812+ProfRandom92@users.noreply.github.com. All security vulnerabilities will be promptly addressed.
+We take the security of CompText MCP Server seriously. If you believe you have found a security vulnerability, please report it to us as described below.
 
-Please include the following information:
+### Please Do NOT:
 
-- A description of the vulnerability
-- Steps to reproduce the vulnerability
-- Possible impact of the vulnerability
-- Any potential solutions or workarounds
+- Open a public GitHub issue for security vulnerabilities
+- Disclose the vulnerability publicly before it has been addressed
 
-## Security Features
+### Please DO:
 
-### Input Validation & Sanitization
+1. **Email us privately**: 159939812+ProfRandom92@users.noreply.github.com
+2. **Provide details**:
+   - Description of the vulnerability
+   - Steps to reproduce
+   - Potential impact
+   - Suggested fix (if any)
+3. **Allow us time** to investigate and fix the issue before any public disclosure
 
-- **Page ID Validation**: All Notion page IDs are validated against regex patterns
-- **Query String Sanitization**: Search queries are sanitized and length-limited (max 200 chars)
-- **Text Output Sanitization**: All text output is sanitized to prevent control character injection
-- **Type Validation**: Strong type checking with Pydantic models
+### What to Expect:
 
-### Rate Limiting
+- **Within 48 hours**: We will acknowledge receipt of your report
+- **Within 7 days**: We will provide an initial assessment
+- **Within 30 days**: We will release a fix or provide a mitigation plan
 
-The REST API implements rate limiting per IP address:
+## 🔐 Security Measures
 
-- **Root/Info endpoints**: 60 requests/minute
-- **Health checks**: 120 requests/minute
-- **Data endpoints**: 30 requests/minute
-- **Search endpoints**: 20 requests/minute
-- **Cache/Admin operations**: 5 requests/minute
+### Code Security
 
-### Authentication & Authorization
+- **Type Safety**: Full type hints with mypy checking
+- **Input Validation**: Pydantic models for all inputs
+- **Error Handling**: Comprehensive error handling without leaking sensitive data
+- **Logging**: Structured logging without sensitive information
 
-- **API Token**: Notion API token stored securely in environment variables
-- **Non-root Docker User**: Containers run as non-privileged user (UID 1000)
-- **CORS Configuration**: Configurable CORS settings for production deployment
+### Dependencies
 
-### Error Handling
+- **Regular Updates**: Dependencies updated monthly
+- **Vulnerability Scanning**: Automated scanning with dependabot
+- **Minimal Dependencies**: Only essential packages included
 
-- **Retry Logic**: Exponential backoff for API failures (3 retries max)
-- **Error Sanitization**: Error messages are sanitized to prevent information leakage
-- **Graceful Degradation**: Services continue operating when non-critical components fail
+### API Security
 
-### Dependency Security
+- **Input Sanitization**: All inputs validated and sanitized
+- **Rate Limiting**: Protection against abuse (when deployed)
+- **CORS Configuration**: Proper CORS headers in REST API
+- **No Sensitive Data**: No credentials stored in code
 
-- **Minimal Dependencies**: Only essential packages are included
-- **Version Pinning**: All dependencies use minimum version constraints
-- **Regular Updates**: Dependencies are regularly reviewed and updated
+### Deployment Security
 
-### Docker Security
+- **Environment Variables**: Secrets managed via environment variables
+- **Docker Security**: Minimal base images, non-root user
+- **HTTPS Only**: Enforce HTTPS in production deployments
 
-- **Multi-stage Builds**: Minimize attack surface with smaller images
-- **Non-root User**: All containers run as non-privileged user
-- **Health Checks**: Built-in health monitoring
-- **Minimal Base Image**: Using slim Python images
+## 🔍 Security Best Practices for Users
 
-## Security Best Practices for Deployment
+### When Deploying
 
-### Environment Variables
-
-Never commit sensitive information:
-
-```bash
-# ❌ Never do this
-NOTION_API_TOKEN=secret_xyz123
-
-# ✅ Use environment-specific configurations
-NOTION_API_TOKEN=${NOTION_TOKEN_FROM_ENV}
-```
-
-### CORS Configuration
-
-For production, restrict CORS origins:
-
-```python
-# Development (permissive)
-allow_origins=["*"]
-
-# Production (restrictive)
-allow_origins=[
-    "https://yourdomain.com",
-    "https://app.yourdomain.com"
-]
-```
-
-### Rate Limiting
-
-Adjust rate limits based on your usage patterns:
-
-```python
-# More restrictive for public APIs
-@limiter.limit("10/minute")
-
-# More permissive for internal services
-@limiter.limit("100/minute")
-```
-
-### Monitoring
-
-- Enable logging in production
-- Monitor failed authentication attempts
-- Track unusual API usage patterns
-- Set up alerts for security events
-
-### Infrastructure
-
-- Use HTTPS for all deployments
-- Keep Render.com/hosting platform updated
-- Enable automatic security updates
-- Use secrets management (not .env files in production)
-
-## Known Security Considerations
-
-### Current Limitations
-
-1. **No Authentication on REST API**: The public REST API has no authentication. Consider adding API key authentication for production use.
-
-2. **CORS Wide Open**: Current configuration allows all origins. Restrict this in production.
-
-3. **No Request Size Limits**: Consider adding request body size limits.
-
-4. **Cache Timing Attacks**: LRU cache might leak timing information. Consider constant-time operations for sensitive data.
-
-### Recommended Improvements
-
-1. **Add API Key Authentication**:
-   ```python
-   from fastapi import Header, HTTPException
-   
-   async def verify_api_key(x_api_key: str = Header(...)):
-       if x_api_key != os.getenv("API_KEY"):
-           raise HTTPException(status_code=403)
+1. **Use Environment Variables**: Never hardcode secrets
+   ```bash
+   export NOTION_API_TOKEN="your_token_here"
+   export COMPTEXT_DATABASE_ID="your_db_id"
    ```
 
-2. **Implement Request Signing**: For critical operations, implement HMAC request signing.
+2. **Enable HTTPS**: Always use HTTPS in production
+   ```python
+   uvicorn_ssl_keyfile = "/path/to/keyfile.pem"
+   uvicorn_ssl_certfile = "/path/to/certfile.pem"
+   ```
 
-3. **Add Audit Logging**: Log all API access with timestamps and IP addresses.
+3. **Restrict Access**: Use firewall rules to limit access
+   ```bash
+   # Only allow specific IPs
+   ufw allow from 192.168.1.0/24 to any port 10000
+   ```
 
-4. **Implement Circuit Breakers**: Prevent cascade failures with circuit breaker pattern.
+4. **Keep Updated**: Regularly update to latest version
+   ```bash
+   pip install --upgrade comptext-mcp-server
+   ```
 
-## Security Checklist for Production
+### When Integrating
 
-- [ ] Set strong Notion API token
-- [ ] Restrict CORS origins to known domains
-- [ ] Enable HTTPS
-- [ ] Configure stricter rate limits
-- [ ] Add API key authentication
-- [ ] Enable audit logging
-- [ ] Set up monitoring and alerts
-- [ ] Review and minimize CORS settings
-- [ ] Use secrets management system
-- [ ] Regular security audits
-- [ ] Keep dependencies updated
-- [ ] Configure firewall rules
+1. **Validate Inputs**: Always validate user inputs before passing to MCP
+2. **Handle Errors**: Implement proper error handling
+3. **Monitor Logs**: Set up log monitoring for suspicious activity
+4. **Limit Scope**: Use minimal permissions for API tokens
 
-## Acknowledgments
+## 🚨 Known Security Considerations
 
-We thank the security research community for helping keep CompText secure.
+### MCP Protocol
 
-## Contact
+- **Stdio Communication**: MCP uses stdio for communication - ensure proper process isolation
+- **Tool Execution**: MCP tools execute with same permissions as server process
+- **Input Validation**: Always validate inputs from MCP clients
 
-For security concerns, contact: 159939812+ProfRandom92@users.noreply.github.com
+### REST API
+
+- **No Built-in Authentication**: REST API has no built-in auth - add authentication layer when exposing publicly
+- **Rate Limiting**: Implement rate limiting for public deployments
+- **Input Size**: Set reasonable request size limits
+
+## 📜 Security Updates
+
+Security updates are released as patch versions (X.X.X) and documented in:
+- This SECURITY.md file
+- CHANGELOG.md
+- GitHub Security Advisories
+
+Subscribe to repository releases to stay informed about security updates.
+
+## 🏆 Security Hall of Fame
+
+We recognize security researchers who responsibly disclose vulnerabilities:
+
+*(No vulnerabilities reported yet)*
+
+## 📚 Additional Resources
+
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [Python Security Best Practices](https://python.readthedocs.io/en/latest/library/security_warnings.html)
+- [MCP Security Guidelines](https://modelcontextprotocol.io/security)
+
+---
+
+Thank you for helping keep CompText MCP Server secure! 🙏
