@@ -14,13 +14,10 @@ from .matcher import best_bundle
 from .registry import load_registry
 
 
-def _clarifying_question(text: str) -> str:
+def _clarifying_question() -> str:
     """Generate a deterministic clarifying question for ambiguous input.
 
     Note: Currently hardcoded in German. Future enhancement: i18n support.
-
-    Args:
-        text: The ambiguous input text
 
     Returns:
         Single-sentence clarifying question in German
@@ -67,13 +64,13 @@ def compile_nl_to_comptext(
         'dsl:\\nuse:profile.dev.v1\\nuse:code.review.v1\\n\\nconfidence: 0.85\\nclarification: null'
     """
     reg = load_registry(registry_path)
-    profile_id = pick_profile_id(audience, reg)
+    profile_id = pick_profile_id(audience)
 
     match, confidence = best_bundle(text, reg)
 
     if match is None or confidence < 0.65:
         # bundle_only: do not guess; ask
-        question = _clarifying_question(text)
+        question = _clarifying_question()
         if return_mode == "dsl_only":
             return question
         return f"dsl:\n\nconfidence: {confidence:.2f}\nclarification: {question}"
