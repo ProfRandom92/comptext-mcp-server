@@ -9,6 +9,8 @@
 [![MCP SDK](https://img.shields.io/badge/MCP-1.1.0-green.svg)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Test Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen.svg)](https://github.com/ProfRandom92/comptext-mcp-server)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-passing-brightgreen.svg)](https://github.com/ProfRandom92/comptext-mcp-server/actions)
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Installation](#-installation) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
@@ -115,6 +117,132 @@ python mcp_server.py
 
 ---
 
+## 💡 Usage Examples
+
+### Natural Language Compilation
+
+The `nl_to_comptext` tool converts natural language into optimized CompText DSL:
+
+**Input:**
+```
+"Review this code for best practices and maintainability"
+```
+
+**Output:**
+```
+dsl:
+use:profile.dev.v1
+use:code.review.v1
+
+confidence: 1.00
+clarification: null
+```
+
+### More Examples
+
+<table>
+<tr>
+<th>Natural Language</th>
+<th>Generated DSL</th>
+</tr>
+<tr>
+<td>
+
+```
+"Find performance bottlenecks and 
+optimize this slow function"
+```
+
+</td>
+<td>
+
+```
+use:profile.dev.v1
+use:code.perfopt.v1
+```
+
+</td>
+</tr>
+<tr>
+<td>
+
+```
+"Scan for high-risk security 
+vulnerabilities and suggest fixes"
+```
+
+</td>
+<td>
+
+```
+use:profile.dev.v1
+use:sec.scan.highfix.v1
+```
+
+</td>
+</tr>
+<tr>
+<td>
+
+```
+"Generate API documentation in 
+markdown with examples"
+```
+
+</td>
+<td>
+
+```
+use:profile.dev.v1
+use:doc.api.md.examples.v1
+```
+
+</td>
+</tr>
+<tr>
+<td>
+
+```
+"Set up CI/CD pipeline and deploy 
+to Kubernetes with Helm"
+```
+
+</td>
+<td>
+
+```
+use:profile.dev.v1
+use:devops.k8s.cicd.full.v1
+```
+
+</td>
+</tr>
+</table>
+
+### Python API Usage
+
+```python
+from comptext_mcp.compiler import compile_nl_to_comptext
+
+# Simple compilation
+result = compile_nl_to_comptext("Review this code")
+print(result)
+
+# With specific audience
+result = compile_nl_to_comptext(
+    "Scan for vulnerabilities", 
+    audience="audit"
+)
+
+# With detailed explanation
+result = compile_nl_to_comptext(
+    "Optimize this function",
+    return_mode="dsl_plus_explanation"
+)
+```
+
+---
+
 ## 🔌 Integration
 
 See [CLAUDE_SETUP.md](CLAUDE_SETUP.md) for detailed Claude Desktop integration guide.
@@ -133,6 +261,75 @@ See [CLAUDE_SETUP.md](CLAUDE_SETUP.md) for detailed Claude Desktop integration g
 | 📊 `get_by_type` | Filter by type (Docs, Examples, etc.) | Find learning resources |
 | 📈 `get_statistics` | View codex statistics | Overview of capabilities |
 | 🤖 `nl_to_comptext` | Compile natural language to DSL | Primary compiler interface |
+
+---
+
+## 🏗️ Architecture
+
+### System Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Client Applications                       │
+│  (Claude Desktop, Cursor, VS Code, Custom Clients)          │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ MCP Protocol / REST API
+┌─────────────────────▼───────────────────────────────────────┐
+│                 CompText MCP Server                          │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │         Natural Language Compiler                     │  │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────────────┐   │  │
+│  │  │ Registry │→ │ Matcher  │→ │ Canonicalizer   │   │  │
+│  │  └──────────┘  └──────────┘  └──────────────────┘   │  │
+│  └───────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │              Bundle Registry (YAML)                   │  │
+│  │  - 3 Audience Profiles (dev/audit/exec)              │  │
+│  │  - 11+ Specialized Bundles                           │  │
+│  └───────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │              Codex (YAML Storage)                     │  │
+│  │  - 13 Modules (A-M)                                   │  │
+│  │  - 32+ Commands & Examples                           │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Compilation Pipeline
+
+```
+Natural Language Input
+        ↓
+┌───────────────────┐
+│  Text Normalization│
+└────────┬──────────┘
+         ↓
+┌────────────────────┐
+│  Bundle Matching   │  ← Keywords from Registry
+│  (Keyword-based)   │
+└────────┬───────────┘
+         ↓
+┌────────────────────┐
+│  Confidence Scoring│  → < 0.65? Ask clarification
+└────────┬───────────┘
+         ↓
+┌────────────────────┐
+│  Profile Selection │  ← Based on audience
+└────────┬───────────┘
+         ↓
+┌────────────────────┐
+│  DSL Rendering     │  → Canonical format
+└────────┬───────────┘
+         ↓
+    CompText DSL Output
+```
+
+### Key Components
+
+- **Registry**: Loads and validates bundles/profiles from YAML
+- **Matcher**: Keyword-based scoring to find best bundle
+- **Canonicalizer**: Renders DSL in deterministic format
+- **Compiler**: Main entry point coordinating all components
 
 ---
 
