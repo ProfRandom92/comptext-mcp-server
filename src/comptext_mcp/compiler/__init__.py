@@ -15,7 +15,7 @@ Usage:
     dsl:
     use:profile.dev.v1
     use:code.review.v1
-    
+
     confidence: 0.85
     clarification: null
 """
@@ -29,7 +29,6 @@ __all__ = [
     "MatchResult",
 ]
 
+from .matcher import MatchResult
 from .nl_to_comptext import compile_nl_to_comptext
 from .registry import Bundle, Profile, Registry, load_registry
-from .matcher import MatchResult
-

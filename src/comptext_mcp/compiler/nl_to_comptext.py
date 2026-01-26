@@ -4,6 +4,7 @@ This module provides the main compilation function that converts
 natural language requests into canonical CompText DSL using
 bundle-first architecture with confidence scoring.
 """
+
 from __future__ import annotations
 
 from typing import Optional
@@ -15,10 +16,10 @@ from .registry import load_registry
 
 def _clarifying_question(text: str) -> str:
     """Generate a deterministic clarifying question for ambiguous input.
-    
+
     Args:
         text: The ambiguous input text
-        
+
     Returns:
         Single-sentence clarifying question
     """
@@ -34,7 +35,7 @@ def compile_nl_to_comptext(
     registry_path: Optional[str] = None,
 ) -> str:
     """Compile natural language to canonical CompText DSL.
-    
+
     This is the main entry point for the NL→CompText compiler.
     Follows hard rules:
     1. Bundle-first: prefer use:<bundle-id> over inline commands
@@ -42,7 +43,7 @@ def compile_nl_to_comptext(
     3. Canonical order: profile → bundles → deltas
     4. Deterministic: same input → same output
     5. Low confidence → clarifying question
-    
+
     Args:
         text: Natural language input to compile
         audience: Target audience ('dev', 'audit', or 'exec')
@@ -52,13 +53,13 @@ def compile_nl_to_comptext(
             - 'dsl_plus_confidence': DSL + confidence score
             - 'dsl_plus_explanation': DSL + confidence + explanation
         registry_path: Optional path to bundles.yaml
-        
+
     Returns:
         Compiled output string in requested format
-        
+
     Raises:
         ValueError: If matched bundle not found in registry (internal error)
-        
+
     Example:
         >>> compile_nl_to_comptext("review this code")
         'dsl:\\nuse:profile.dev.v1\\nuse:code.review.v1\\n\\nconfidence: 0.85\\nclarification: null'

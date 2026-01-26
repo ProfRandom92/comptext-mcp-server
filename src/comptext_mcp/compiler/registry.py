@@ -4,6 +4,7 @@ This module provides the core data structures and loading functionality
 for the CompText bundle registry, which defines audience profiles and
 pre-optimized command bundles.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -16,12 +17,13 @@ import yaml
 @dataclass(frozen=True)
 class Profile:
     """Represents an audience profile with default configurations.
-    
+
     Attributes:
         id: Unique profile identifier (e.g., 'profile.dev.v1')
         name: Human-readable name
         expansion: List of CompText commands to expand into
     """
+
     id: str
     name: str
     expansion: List[str]
@@ -30,7 +32,7 @@ class Profile:
 @dataclass(frozen=True)
 class Bundle:
     """Represents a pre-optimized command bundle.
-    
+
     Attributes:
         id: Unique bundle identifier (e.g., 'code.review.v1')
         domain: Domain category (code, docs, security, etc.)
@@ -38,6 +40,7 @@ class Bundle:
         keywords_any: Keywords for matching natural language input
         expansion: List of CompText commands to expand into
     """
+
     id: str
     domain: str
     task: str
@@ -48,18 +51,19 @@ class Bundle:
 @dataclass(frozen=True)
 class Registry:
     """Registry containing all profiles and bundles.
-    
+
     Attributes:
         profiles: Mapping of profile IDs to Profile objects
         bundles: Mapping of bundle IDs to Bundle objects
     """
+
     profiles: Dict[str, Profile]
     bundles: Dict[str, Bundle]
 
 
 def _repo_root() -> Path:
     """Get the repository root directory.
-    
+
     Returns:
         Path to repository root (3 levels up from this file)
     """
@@ -69,13 +73,13 @@ def _repo_root() -> Path:
 
 def load_registry(path: Optional[str] = None) -> Registry:
     """Load the bundle registry from YAML file.
-    
+
     Args:
         path: Optional path to bundles.yaml. If None, uses default location.
-        
+
     Returns:
         Registry object with all profiles and bundles loaded
-        
+
     Raises:
         ValueError: If required profiles are missing or YAML is invalid
         FileNotFoundError: If bundles.yaml file not found

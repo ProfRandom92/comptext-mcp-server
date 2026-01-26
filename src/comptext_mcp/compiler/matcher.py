@@ -3,6 +3,7 @@
 This module implements deterministic keyword-based matching to select
 the most appropriate bundle for a given natural language input.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -14,12 +15,13 @@ from .registry import Bundle, Registry
 @dataclass(frozen=True)
 class MatchResult:
     """Result of matching natural language to a bundle.
-    
+
     Attributes:
         bundle_id: ID of the matched bundle
         score: Match score (higher is better)
         hits: List of matched keywords
     """
+
     bundle_id: str
     score: int
     hits: List[str]
@@ -27,10 +29,10 @@ class MatchResult:
 
 def _normalize(text: str) -> str:
     """Normalize text for matching (lowercase, single spaces).
-    
+
     Args:
         text: Input text to normalize
-        
+
     Returns:
         Normalized text string
     """
@@ -39,16 +41,16 @@ def _normalize(text: str) -> str:
 
 def score_bundles(text: str, registry: Registry) -> List[MatchResult]:
     """Score all bundles against input text using keyword matching.
-    
+
     Scoring rules:
     - Each matched keyword: +2 points
     - Domain-specific bonus: +1 point for domain relevance
     - Results sorted by score (desc), then bundle ID (asc) for determinism
-    
+
     Args:
         text: Natural language input text
         registry: Registry containing bundles to match against
-        
+
     Returns:
         List of MatchResult objects sorted by relevance (best first)
     """
@@ -84,19 +86,19 @@ def score_bundles(text: str, registry: Registry) -> List[MatchResult]:
 
 def best_bundle(text: str, registry: Registry) -> Tuple[MatchResult | None, float]:
     """Find the best matching bundle with confidence score.
-    
+
     Applies ambiguity penalty if top two matches are very close.
     Confidence is normalized to [0.0, 1.0] range.
-    
+
     Args:
         text: Natural language input text
         registry: Registry containing bundles to match against
-        
+
     Returns:
         Tuple of (MatchResult or None, confidence)
         - MatchResult is None if no matches found
         - confidence < 0.65 indicates low confidence (clarification needed)
-        
+
     Example:
         >>> match, conf = best_bundle("review this code", registry)
         >>> match.bundle_id
