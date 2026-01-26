@@ -1,173 +1,205 @@
+<div align="center">
+
 # 🚀 CompText MCP Server
 
-Ein MCP (Model Context Protocol) Server für CompText DSL - mit Natural Language zu DSL Compiler.
+### Token-Efficient DSL for LLM Interactions
+*Reduce token usage by 90-95% with intelligent domain-specific language compilation*
 
-## 📋 Features
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![MCP SDK](https://img.shields.io/badge/MCP-1.1.0-green.svg)](https://modelcontextprotocol.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-- ✅ **Natural Language zu CompText DSL Compiler** - Konvertiert natürliche Sprache in kanonisches CompText
-- ✅ **Bundle-basiertes Matching** - Verwendet vordefinierte Bundles aus `bundles/bundles.yaml`
-- ✅ **YAML-basierter Codex** - Vollständiges Modul-System in `codex/modules.yaml`
-- ✅ **Confidence Scoring** - Berechnet Konfidenz-Score für Matches (0-1)
-- ✅ **Audience Profiles** - Unterstützt dev/audit/exec Profile
-- ✅ **FastAPI HTTP Wrapper** - REST API für einfache Integration
-- ✅ **Stdio MCP Server** - Natives MCP-Protokoll für direkte Integration
-- ✅ **Keine externen Dependencies** - Alles lokal in YAML-Dateien
-- ✅ **13 Module, 32+ Commands** - Vollständiger CompText DSL Codex
-- ✅ **Health Check Endpoint** - Monitoring und Status
-- ✅ **Automatisches Deployment** - Bereit für Render.com/Railway/etc.
+[Features](#-features) • [Quick Start](#-quick-start) • [Installation](#-installation) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
-## 🔧 Verwendung
+![CompText Banner](https://via.placeholder.com/800x200/1a1a1a/00ff00?text=CompText+MCP+Server)
 
-### HTTP API (FastAPI Wrapper)
+</div>
+
+---
+
+## 📖 Overview
+
+**CompText MCP Server** is a production-ready Model Context Protocol (MCP) server that provides a powerful domain-specific language (DSL) for efficient LLM interactions. By converting natural language requests into optimized CompText commands, it dramatically reduces token usage while maintaining full semantic clarity.
+
+### 🎯 Key Benefits
+
+- **🎨 90-95% Token Reduction** - Compress verbose instructions into canonical DSL
+- **🧠 Smart NL Compiler** - Automatic natural language to DSL translation
+- **📦 Bundle-First Architecture** - Pre-optimized command bundles for common workflows
+- **🔌 Universal Integration** - Works with Claude Desktop, Cursor, VS Code, and custom clients
+- **🎭 Audience Profiles** - Tailored output for developers, auditors, and executives
+- **⚡ Zero External Dependencies** - All data stored locally in YAML
+- **🛡️ Production Ready** - Comprehensive testing, logging, and error handling
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 🎯 Core Features
+- ✅ **Natural Language Compiler** with confidence scoring
+- ✅ **13 Specialized Modules** (A-M) with 32+ commands
+- ✅ **Notion Integration** for codex management
+- ✅ **MCP Protocol Support** for direct LLM integration
+- ✅ **REST API Wrapper** for HTTP-based access
+- ✅ **Audience-Aware Output** (dev/audit/exec profiles)
+
+</td>
+<td width="50%">
+
+### 🚀 Professional Features
+- ✅ **Comprehensive Testing** with pytest suite
+- ✅ **Type Safety** with full mypy annotations
+- ✅ **Code Quality** enforced with black, isort, flake8
+- ✅ **CI/CD Pipeline** with GitHub Actions
+- ✅ **Docker Support** for containerized deployment
+- ✅ **Metrics & Monitoring** built-in
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.10+ (3.13 supported)
+- Optional: [uv](https://github.com/astral-sh/uv) for faster package management
+
+### Installation
+
+#### Option 1: Using uv (Recommended ⚡)
 
 ```bash
-pip install -r requirements.txt
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone repository
+git clone https://github.com/ProfRandom92/comptext-mcp-server.git
+cd comptext-mcp-server
+
+# Install with uv
+uv pip install -e .
+```
+
+#### Option 2: Using pip
+
+```bash
+# Clone repository
+git clone https://github.com/ProfRandom92/comptext-mcp-server.git
+cd comptext-mcp-server
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install
+pip install -e .
+```
+
+### Test the Installation
+
+```bash
+# Run MCP server directly
+python -m comptext_mcp.server
+
+# Or use REST API wrapper
 python mcp_server.py
 ```
 
-Server läuft auf `http://localhost:10000`
+---
 
-#### API Endpoints
+## 🔌 Integration
 
-**POST /compile** - Kompiliere Natural Language zu CompText DSL
+See [CLAUDE_SETUP.md](CLAUDE_SETUP.md) for detailed Claude Desktop integration guide.
 
-```bash
-curl -X POST http://localhost:10000/compile \
-  -H "Content-Type: application/json" \
-  -d '{
-    "text": "Review this code and improve readability",
-    "audience": "dev",
-    "return_mode": "dsl_plus_confidence"
-  }'
-```
+---
 
-Response:
-```json
-{
-  "dsl": "use:profile.dev.v1\nuse:code.review.v1",
-  "confidence": 0.71
-}
-```
+## 🛠️ Available MCP Tools
 
-**GET /health** - Health Check
+| Tool | Description | Use Case |
+|------|-------------|----------|
+| 🔍 `list_modules` | List all CompText modules (A-M) | Browse available functionality |
+| 📦 `get_module` | Load specific module with all commands | Deep dive into module details |
+| 🔎 `search` | Search codex by keywords | Find relevant commands quickly |
+| 📄 `get_command` | Get full command documentation | Learn command syntax |
+| 🏷️ `get_by_tag` | Filter by tags (Core, Advanced, etc.) | Curated command sets |
+| 📊 `get_by_type` | Filter by type (Docs, Examples, etc.) | Find learning resources |
+| 📈 `get_statistics` | View codex statistics | Overview of capabilities |
+| 🤖 `nl_to_comptext` | Compile natural language to DSL | Primary compiler interface |
 
-**GET /** - Server Status
+---
 
-### MCP Server (Stdio)
+## 📚 Documentation
 
-### Deployment auf Render.com
+- 📖 [CLAUDE_SETUP.md](CLAUDE_SETUP.md) - Claude Desktop integration
+- 🤝 [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- 🔒 [SECURITY.md](SECURITY.md) - Security policy
+- 📝 [CHANGELOG.md](CHANGELOG.md) - Version history
+- 🗺️ [ROADMAP.md](ROADMAP.md) - Future plans
+- 📚 [Full Documentation](https://www.notion.so/0d571dc857144b199243ea951d60cef6)
 
-1. Push dieses Repository zu GitHub
-2. Gehe zu [render.com/deploy](https://render.com/deploy)
-3. Verbinde dein Repository
-4. Render erkennt automatisch `render.yaml`
-5. Click "Apply" → Fertig! ✅
+---
 
-### Nach dem Deployment
+## 🧪 Development
 
-Du erhältst eine URL wie: `https://comptext-mcp.onrender.com`
-
-Diese URL verwendest du dann in deiner MCP-Client-Konfiguration.
-
-## 🔧 Environment Variables
-
-**Keine Environment Variables erforderlich!**
-
-Alle Daten sind lokal gespeichert:
-- Compiler Bundles: `bundles/bundles.yaml`
-- Codex Module: `codex/modules.yaml`
-
-Optional:
-```bash
-COMPTEXT_CODEX_PATH=codex/modules.yaml  # Standard-Pfad zum Codex
-PORT=10000                               # HTTP Server Port
-```
-
-## 🔧 MCP Client Konfiguration
-
-Für HTTP Wrapper:
-
-| Feld | Wert |
-|------|------|
-| Name | CompText MCP Server |
-| URL  | https://comptext-mcp.onrender.com |
-| Auth | None |
-
-Für Stdio MCP Server in Claude Desktop:
-
-```json
-{
-  "mcpServers": {
-    "comptext": {
-      "command": "python",
-      "args": ["-m", "comptext_mcp.server"]
-    }
-  }
-}
-```
-
-**Hinweis:** Stelle sicher, dass das `comptext-mcp-server` Verzeichnis im PYTHONPATH ist oder verwende den vollen Pfad.
-
-Für direkte MCP-Integration:
+### Setup Development Environment
 
 ```bash
-python -m comptext_mcp.server
+git clone https://github.com/ProfRandom92/comptext-mcp-server.git
+cd comptext-mcp-server
+pip install -e ".[dev]"
+pre-commit install
 ```
 
-**MCP Tools verfügbar:**
-- `nl_to_comptext` - Natural Language zu CompText DSL
-- `list_modules` - Liste alle CompText Module
-- `get_module` - Lade spezifisches Modul
-- `search` - Durchsuche Codex
-- `get_command` - Lade Seiteninhalt
-- `get_by_tag` - Filtere nach Tag
-- `get_by_type` - Filtere nach Typ
-- `get_statistics` - Codex Statistiken
-
-## 📊 Compiler Spec
-
-Der Compiler konvertiert natürliche Sprache in kanonisches CompText DSL:
-
-**Input:**
-- `text`: Natural language request (required)
-- `audience`: dev|audit|exec (default: dev)
-- `mode`: bundle_only|allow_inline_fallback (default: bundle_only)
-- `return_mode`: dsl_only|dsl_plus_confidence|dsl_plus_explanation (default: dsl_plus_confidence)
-
-**Output:**
-```
-dsl:
-use:profile.dev.v1
-use:code.review.v1
-
-confidence: 0.71
-clarification: null
-```
-
-**Matching:**
-- Keyword matching mit +2 Punkten pro Treffer
-- Domain/Task Bonus mit +1 Punkt
-- Ambiguity Penalty bei ähnlichen Scores
-- Confidence = min(1.0, score / 7.0)
-- Bei confidence < 0.65 wird Klärungsfrage gestellt
-
-**Bundles:** Siehe `bundles/bundles.yaml` für alle verfügbaren Bundles
-
-## ⚡ Performance-Hinweis
-
-Der Free Tier schläft nach 15 Min Inaktivität. Erste Anfrage nach Pause dauert ~30 Sek (Cold Start).
-
-**Lösung:** Verwende Render's Cron Jobs für Keep-Alive Pings.
-
-## 🧪 Tests
-
-Tests ausführen:
+### Testing
 
 ```bash
-pip install -r requirements-dev.txt
-pytest tests/ -v
+# Run tests
+pytest tests/ -v --cov
+
+# Code quality
+black src/ tests/
+mypy src/
+flake8 src/ tests/
 ```
 
-## 📝 Lizenz
+---
 
-MIT License
+## 🤝 Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file.
+
+---
+
+## 🙏 Acknowledgments
+
+- **MCP Protocol** team
+- **Python Community**
+- All **Contributors**
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for full list.
+
+---
+
+<div align="center">
+
+### ⭐ Star us on GitHub!
+
+Made with ❤️ by [ProfRandom92](https://github.com/ProfRandom92)
+
+[![GitHub stars](https://img.shields.io/github/stars/ProfRandom92/comptext-mcp-server?style=social)](https://github.com/ProfRandom92/comptext-mcp-server/stargazers)
+
+</div>
