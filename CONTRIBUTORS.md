@@ -9,6 +9,7 @@ Thank you to all the people who have contributed to CompText MCP Server! 🎉
   - Project architecture and design
   - Core NL compiler implementation
   - MCP server integration
+  - Mobile-first transformation
   - Documentation
 
 ## 🌟 Contributors
