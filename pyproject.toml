@@ -46,6 +46,9 @@ Repository = "https://github.com/ProfRandom92/comptext-mcp-server.git"
 Issues = "https://github.com/ProfRandom92/comptext-mcp-server/issues"
 Changelog = "https://github.com/ProfRandom92/comptext-mcp-server/blob/main/CHANGELOG.md"
 
+[project.scripts]
+comptext-mobile = "comptext_mcp.mobile_agent.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.0",
@@ -62,8 +65,14 @@ rest = [
     "uvicorn>=0.24.0",
     "gunicorn>=21.2.0",
 ]
+mobile = [
+    "click>=8.1.0",
+    "aiohttp>=3.9.0",
+    "websockets>=12.0",
+    "prometheus-client>=0.19.0",
+]
 all = [
-    "comptext-mcp-server[dev,rest]"
+    "comptext-mcp-server[dev,rest,mobile]"
 ]
 
 [tool.setuptools]
