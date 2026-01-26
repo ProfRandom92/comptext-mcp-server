@@ -1,0 +1,25 @@
+# CompText MCP Server Code Owners
+# 
+# These owners will be automatically requested for review when PRs are opened.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @ProfRandom92
+
+# Core compiler code
+/src/comptext_mcp/compiler/ @ProfRandom92
+
+# Configuration files
+/bundles/bundles.yaml @ProfRandom92
+/pyproject.toml @ProfRandom92
+/setup.py @ProfRandom92
+
+# CI/CD
+/.github/ @ProfRandom92
+
+# Documentation
+/docs/ @ProfRandom92
+/*.md @ProfRandom92
+
+# Tests
+/tests/ @ProfRandom92
