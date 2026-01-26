@@ -1,94 +1,142 @@
-<div align="center">
-
 # 🚀 CompText MCP Server
-### The Mobile-First Token-Efficient DSL for LLM Interactions
+### Token-efficient DSL server for MCP, REST, and mobile agents
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![MCP SDK 1.1.0](https://img.shields.io/badge/MCP-1.1.0-00D4AA.svg)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Mobile Ready](https://img.shields.io/badge/Mobile-Ready-green.svg)](docs/MOBILE_SETUP.md)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Mobile Setup](#-mobile-setup) • [Documentation](#-documentation) • [Contributing](#-contributing)
-
-<img src="https://via.placeholder.com/800x200/1a1a1a/00ff00?text=CompText+MCP+Server+-+Mobile+First" alt="CompText Banner"/>
-
-**Reduce LLM token usage by 90-95% with intelligent DSL compilation**  
-**Now with full mobile agent support for on-the-go AI workflows**
-
-</div>
+CompText compiles verbose instructions into a compact DSL to cut LLM token usage by up to 90–95%. This repository ships a production-ready MCP server, REST gateway, and a mobile automation agent.
 
 ---
 
-## 📖 Overview
-
-**CompText MCP Server** is a production-ready Model Context Protocol (MCP) server optimized for mobile agents and edge computing. Transform verbose natural language into ultra-efficient CompText DSL, perfect for mobile AI assistants with bandwidth and compute constraints.
-
-### 🎯 Why CompText for Mobile?
-
-| Challenge | CompText Solution |
-|-----------|-------------------|
-| 📱 **Limited Bandwidth** | 90-95% smaller prompts = faster responses |
-| 🔋 **Battery Efficiency** | Fewer tokens = less processing = longer battery |
-| ⚡ **Response Speed** | Compressed DSL = lightning-fast inference |
-| 💰 **API Costs** | Smaller prompts = lower API bills |
-| 🌐 **Offline Capability** | Local DSL processing without cloud dependency |
-
----
-
-## ✨ Features
-
-See full README on branch for complete mobile-first feature set including:
-
-- 📱 **Mobile Agent Integration** - iOS, Android, Telegram, WhatsApp, SMS
-- 🔋 **Battery-Aware Processing** - Optimized for mobile devices  
-- 🌐 **Offline DSL Library** - Works without internet
-- ⚡ **Ultra-Low Latency** - <100ms mobile response time
-- 📊 **Performance Metrics** - Real mobile impact data
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  - [MCP Server](#mcp-server)
+  - [REST API](#rest-api)
+  - [Mobile Agent CLI](#mobile-agent-cli)
+- [Testing & Linting](#testing--linting)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [Security](#security)
+- [License](#license)
 
 ---
 
-## 🚀 Quick Start
+## Overview
+CompText MCP Server exposes the CompText DSL through:
+- **MCP** for native tool access (Claude Desktop, Cursor, etc.)
+- **REST** for HTTP clients (Perplexity, ChatGPT API-style callers)
+- **Mobile agent** for Android automation with minimal tokens
 
+All services share the same validation, caching, metrics, and security hardening described in [`OPTIMIZATION_SUMMARY.md`](OPTIMIZATION_SUMMARY.md).
+
+## Features
+- Token-efficient DSL with caching and input validation
+- Dual interfaces: MCP server and REST wrapper
+- Mobile agent with Ollama/Cloud modes and Prometheus metrics
+- Rate limiting, sanitization, and structured logging
+- Docker support plus Railway/render configs
+
+## Architecture
+```
+Client (MCP / REST / Mobile) -> CompText Server -> Notion codex (content store)
+                                   |-> Validation & rate limiting
+                                   |-> Metrics & logging
+                                   |-> Caching layer
+```
+
+## Prerequisites
+- Python 3.10+
+- Notion API token with access to the CompText database
+- Recommended: virtualenv
+
+## Quick Start
 ```bash
 git clone https://github.com/ProfRandom92/comptext-mcp-server.git
 cd comptext-mcp-server
-git checkout claude/mobile-agent-setup-DGcwu
-pip install -e .
+
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+
+pip install -e .[rest,mobile]
+cp .env.example .env
+# Fill in NOTION_API_TOKEN and COMPTEXT_DATABASE_ID
+
+# Start MCP server
 python -m comptext_mcp.server
+
+# (Optional) Start REST API
+python rest_api_wrapper.py
 ```
 
----
+## Configuration
+All configuration uses environment variables (see [.env.example](.env.example)):
+- `NOTION_API_TOKEN` – Notion API token
+- `COMPTEXT_DATABASE_ID` – Notion database ID
+- `HOST` / `PORT` – REST server host/port
+- `LOG_LEVEL` – Logging level
 
-## 📱 Mobile Setup
+## Usage
+### MCP Server
+Add to your MCP client (example for Claude Desktop):
+```json
+{
+  "mcpServers": {
+    "comptext-codex": {
+      "command": "python3",
+      "args": ["-m", "comptext_mcp.server"],
+      "cwd": "/path/to/comptext-mcp-server",
+      "env": {
+        "PYTHONPATH": "/path/to/comptext-mcp-server/src",
+        "NOTION_API_TOKEN": "your_token",
+        "COMPTEXT_DATABASE_ID": "0e038c9b52c5466694dbac288280dd93"
+      }
+    }
+  }
+}
+```
 
-### iOS Siri Shortcuts
-See `docs/MOBILE_IOS.md` for complete guide.
+### REST API
+```bash
+python rest_api_wrapper.py
+curl http://localhost:8000/health
+```
+See [`docs/API.md`](docs/API.md) for endpoints, rate limits, and examples.
 
-### Android Tasker  
-See `docs/MOBILE_ANDROID.md` for complete guide.
+### Mobile Agent CLI
+```bash
+comptext-mobile run "Open Chrome and search for weather" --steps 10
+comptext-mobile status
+comptext-mobile screenshot --output screen.png
+```
+Configure via environment or a config file; details in [`docs/mobile-agent.md`](docs/mobile-agent.md).
 
-### Telegram Bot
-See `docs/MOBILE_TELEGRAM.md` for complete guide.
+## Testing & Linting
+```bash
+pip install -e .[dev]
+pytest
+black . && flake8 && mypy
+```
 
----
+## Documentation
+- [Quick Start](docs/QUICKSTART.md)
+- [API Reference](docs/API.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [FAQ](docs/FAQ.md)
+- [Optimization Summary](OPTIMIZATION_SUMMARY.md)
 
-## 📊 Performance
+## Contributing
+We welcome issues and PRs. Please see [CONTRIBUTING.md](CONTRIBUTING.md) and follow the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
-| Metric | Mobile Impact |
-|--------|---------------|
-| Token Reduction | 📉 10x less data |
-| Mobile Latency | 🚀 <100ms |
-| Battery Impact | 🔋 Minimal (<1%) |
-| Offline Capable | 🌐 Yes |
-| Memory | 📱 <50MB |
+## Security
+Report vulnerabilities via [SECURITY.md](SECURITY.md). The project uses input validation, rate limiting, and CodeQL scanning (see CI).
 
----
-
-<div align="center">
-
-### ⭐ Star us for mobile-first AI!
-
-Built with ❤️ by [ProfRandom92](https://github.com/ProfRandom92)
-
-</div>
+## License
+MIT © [ProfRandom92](https://github.com/ProfRandom92)
