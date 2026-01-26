@@ -25,6 +25,15 @@ class ChatMessage:
     tool_calls: Optional[list[dict]] = None
     tool_call_id: Optional[str] = None
 
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary for API requests."""
+        data = {"role": self.role, "content": self.content}
+        if self.tool_calls:
+            data["tool_calls"] = self.tool_calls
+        if self.tool_call_id:
+            data["tool_call_id"] = self.tool_call_id
+        return data
+
 
 @dataclass
 class ChatResponse:

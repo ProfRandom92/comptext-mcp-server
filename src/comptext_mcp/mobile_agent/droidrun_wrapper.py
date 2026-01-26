@@ -558,3 +558,45 @@ class DroidRunWrapper:
     def cached_screen(self) -> Optional[ScreenState]:
         """Get cached screen state."""
         return self._screen_cache
+
+    async def get_device_info(self) -> dict[str, str]:
+        """
+        Get device information.
+
+        Returns:
+            Dictionary with device info (serial, model, version, etc.)
+        """
+        info = {
+            "serial": self.config.device_serial or "unknown",
+            "model": "unknown",
+            "manufacturer": "unknown",
+            "version": "unknown",
+            "sdk": "unknown",
+            "device": "unknown",
+        }
+
+        try:
+            # Get device model
+            model = await self._adb_shell("getprop ro.product.model")
+            info["model"] = model.strip()
+
+            # Get manufacturer
+            manufacturer = await self._adb_shell("getprop ro.product.manufacturer")
+            info["manufacturer"] = manufacturer.strip()
+
+            # Get Android version
+            version = await self._adb_shell("getprop ro.build.version.release")
+            info["version"] = version.strip()
+
+            # Get SDK level
+            sdk = await self._adb_shell("getprop ro.build.version.sdk")
+            info["sdk"] = sdk.strip()
+
+            # Get device name
+            device = await self._adb_shell("getprop ro.product.device")
+            info["device"] = device.strip()
+
+        except Exception as e:
+            logger.warning(f"Failed to get device info: {e}")
+
+        return info
