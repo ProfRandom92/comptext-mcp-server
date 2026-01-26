@@ -8,7 +8,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 # Read requirements
 def read_requirements(filename):
-    """Read requirements from a file, handling -r includes."""
+    """Read requirements from a file, handling -r includes.
+
+    Args:
+        filename: Path to requirements file
+
+    Returns:
+        List of requirement strings
+    """
     requirements = []
     with open(filename, "r", encoding="utf-8") as f:
         for line in f:

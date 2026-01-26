@@ -17,13 +17,15 @@ from .registry import load_registry
 def _clarifying_question(text: str) -> str:
     """Generate a deterministic clarifying question for ambiguous input.
 
+    Note: Currently hardcoded in German. Future enhancement: i18n support.
+
     Args:
         text: The ambiguous input text
 
     Returns:
-        Single-sentence clarifying question
+        Single-sentence clarifying question in German
     """
-    # single-sentence, deterministic question
+    # TODO: Internationalization - make this configurable
     return "Meinst du Code-Review, Performance-Optimierung, Debugging, Security-Scan oder Dokumentation? Bitte wähle eines."
 
 
