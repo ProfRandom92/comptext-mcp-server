@@ -8,16 +8,39 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 # Read requirements
 def read_requirements(filename):
+    """Read requirements from a file, handling -r includes."""
+    requirements = []
     with open(filename, "r", encoding="utf-8") as f:
-        return [line.strip() for line in f if line.strip() and not line.startswith("#")]
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            # Handle -r includes
+            if line.startswith("-r "):
+                include_file = line.split(" ", 1)[1]
+                requirements.extend(read_requirements(include_file))
+            else:
+                requirements.append(line)
+    return requirements
 
 base_requirements = read_requirements("requirements.txt")
-dev_requirements = read_requirements("requirements-dev.txt")
-rest_requirements = read_requirements("requirements-rest.txt")
+# Read dev and rest requirements directly without includes to avoid duplicates
+dev_requirements = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.7.0",
+    "flake8>=6.1.0",
+    "mypy>=1.5.0",
+]
+rest_requirements = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+]
 
 setup(
     name="comptext-mcp-server",
-    version="1.0.0",
+    version="2.0.0",
     author="ProfRandom92",
     author_email="159939812+ProfRandom92@users.noreply.github.com",
     description="Token-efficient Domain-Specific Language for LLM interactions",
