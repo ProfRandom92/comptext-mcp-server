@@ -1,4 +1,5 @@
 """Comprehensive test suite for CompText compiler components."""
+
 from __future__ import annotations
 
 import os
@@ -10,7 +11,7 @@ import pytest
 os.environ.setdefault("NOTION_API_TOKEN", "dummy_token_for_testing")
 os.environ.setdefault("COMPTEXT_DATABASE_ID", "0e038c9b52c5466694dbac288280dd93")
 
-from comptext_mcp.compiler import (
+from comptext_mcp.compiler import (  # noqa: E402
     Bundle,
     MatchResult,
     Profile,
@@ -18,8 +19,8 @@ from comptext_mcp.compiler import (
     compile_nl_to_comptext,
     load_registry,
 )
-from comptext_mcp.compiler.canonicalize import pick_profile_id, render_dsl
-from comptext_mcp.compiler.matcher import best_bundle, score_bundles
+from comptext_mcp.compiler.canonicalize import pick_profile_id, render_dsl  # noqa: E402
+from comptext_mcp.compiler.matcher import best_bundle, score_bundles  # noqa: E402
 
 
 class TestRegistry:
@@ -300,8 +301,8 @@ class TestEdgeCases:
         """Test error handling when matched bundle not in registry (should never happen)."""
         # This is an internal error that should not occur with valid registry
         # But we test the guardrail exists
-        from comptext_mcp.compiler.registry import load_registry
         from comptext_mcp.compiler.matcher import MatchResult
+        from comptext_mcp.compiler.registry import load_registry
 
         reg = load_registry()
         # Create a fake match with non-existent bundle

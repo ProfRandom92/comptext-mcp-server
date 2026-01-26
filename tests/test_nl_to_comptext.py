@@ -8,8 +8,8 @@ from pathlib import Path
 os.environ.setdefault("NOTION_API_TOKEN", "dummy_token_for_testing")
 os.environ.setdefault("COMPTEXT_DATABASE_ID", "0e038c9b52c5466694dbac288280dd93")
 
-from comptext_mcp.compiler.nl_to_comptext import compile_nl_to_comptext
-from comptext_mcp.compiler.registry import load_registry
+from comptext_mcp.compiler.nl_to_comptext import compile_nl_to_comptext  # noqa: E402
+from comptext_mcp.compiler.registry import load_registry  # noqa: E402
 
 
 def test_no_invented_commands_and_deterministic():

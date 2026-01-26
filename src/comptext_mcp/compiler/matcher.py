@@ -7,9 +7,9 @@ the most appropriate bundle for a given natural language input.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
-from .registry import Bundle, Registry
+from .registry import Registry
 
 
 @dataclass(frozen=True)
