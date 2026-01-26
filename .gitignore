@@ -34,6 +34,7 @@ env/
 # Environment Variables
 .env
 .env.local
+.env.mobile
 
 # OS
 .DS_Store
