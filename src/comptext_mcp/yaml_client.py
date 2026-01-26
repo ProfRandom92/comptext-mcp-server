@@ -1,10 +1,11 @@
 """YAML-based Codex Client für CompText MCP-Server"""
-import yaml
-from typing import Optional, List, Dict, Any
-import os
+
 import logging
-from functools import lru_cache
+import os
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 # Logging Setup
 logger = logging.getLogger(__name__)
@@ -15,11 +16,13 @@ CODEX_PATH = os.getenv("COMPTEXT_CODEX_PATH", "codex/modules.yaml")
 
 class YAMLClientError(Exception):
     """Custom exception for YAML client errors"""
+
     pass
 
 
 class CodexCache:
     """Simple cache for codex data"""
+
     _modules = None
     _metadata = None
 
@@ -48,14 +51,14 @@ def _load_codex() -> Dict[str, Any]:
         if not codex_file.exists():
             raise YAMLClientError(f"Codex file not found: {codex_file}")
 
-        with open(codex_file, 'r', encoding='utf-8') as f:
+        with open(codex_file, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f)
 
         CodexCache._modules = data.get("modules", [])
         CodexCache._metadata = {
             "version": data.get("version", "unknown"),
             "format": data.get("format", "comptext-codex"),
-            "description": data.get("description", "")
+            "description": data.get("description", ""),
         }
 
         logger.info(f"Loaded {len(CodexCache._modules)} modules from {codex_file}")
@@ -132,8 +135,6 @@ def get_page_content(command_id: str) -> str:
         Formatted markdown content for the command
     """
     try:
-        modules = get_all_modules()
-
         # Parse command_id (format: "MODULE.COMMAND")
         if "." not in command_id:
             raise YAMLClientError(f"Invalid command ID format: {command_id}")
@@ -185,42 +186,49 @@ def search_codex(query: str, max_results: int = 20) -> List[Dict[str, Any]]:
 
         for module in modules:
             # Search in module name and description
-            if (query_lower in module["name"].lower() or
-                query_lower in module["description"].lower()):
-                results.append({
-                    "type": "module",
-                    "id": module["id"],
-                    "name": module["name"],
-                    "description": module["description"],
-                    "match_type": "module"
-                })
+            if query_lower in module["name"].lower() or query_lower in module["description"].lower():
+                results.append(
+                    {
+                        "type": "module",
+                        "id": module["id"],
+                        "name": module["name"],
+                        "description": module["description"],
+                        "match_type": "module",
+                    }
+                )
 
             # Search in commands
             for cmd in module.get("commands", []):
-                if (query_lower in cmd["id"].lower() or
-                    query_lower in cmd["description"].lower() or
-                    query_lower in cmd["syntax"].lower()):
-                    results.append({
-                        "type": "command",
-                        "id": cmd["id"],
-                        "syntax": cmd["syntax"],
-                        "description": cmd["description"],
-                        "module": module["id"],
-                        "match_type": "command"
-                    })
+                if (
+                    query_lower in cmd["id"].lower()
+                    or query_lower in cmd["description"].lower()
+                    or query_lower in cmd["syntax"].lower()
+                ):
+                    results.append(
+                        {
+                            "type": "command",
+                            "id": cmd["id"],
+                            "syntax": cmd["syntax"],
+                            "description": cmd["description"],
+                            "module": module["id"],
+                            "match_type": "command",
+                        }
+                    )
 
                 # Also search in examples
                 for example in cmd.get("examples", []):
                     if query_lower in example.lower():
                         if cmd["id"] not in [r["id"] for r in results if r.get("type") == "command"]:
-                            results.append({
-                                "type": "command",
-                                "id": cmd["id"],
-                                "syntax": cmd["syntax"],
-                                "description": cmd["description"],
-                                "module": module["id"],
-                                "match_type": "example"
-                            })
+                            results.append(
+                                {
+                                    "type": "command",
+                                    "id": cmd["id"],
+                                    "syntax": cmd["syntax"],
+                                    "description": cmd["description"],
+                                    "module": module["id"],
+                                    "match_type": "example",
+                                }
+                            )
 
         return results[:max_results]
 
@@ -243,19 +251,12 @@ def get_page_by_id(page_id: str) -> Optional[Dict[str, Any]]:
         # Try as module ID first
         module = get_module_by_name(page_id)
         if module:
-            return {
-                "type": "module",
-                **module
-            }
+            return {"type": "module", **module}
 
         # Try as command ID
         if "." in page_id:
             content = get_page_content(page_id)
-            return {
-                "type": "command",
-                "id": page_id,
-                "content": content
-            }
+            return {"type": "command", "id": page_id, "content": content}
 
         return None
 
@@ -325,7 +326,7 @@ def get_statistics() -> Dict[str, Any]:
             "total_commands": total_commands,
             "module_types": sorted(list(module_types)),
             "total_tags": len(all_tags),
-            "tags": sorted(list(all_tags))
+            "tags": sorted(list(all_tags)),
         }
 
     except Exception as e:

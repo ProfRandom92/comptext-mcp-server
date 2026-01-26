@@ -1,10 +1,12 @@
 """Notion API Client für CompText MCP-Server - Production Ready"""
+
+import logging
+import os
+from functools import lru_cache
+from typing import Any, Dict, List
+
 from notion_client import Client
 from notion_client.errors import APIResponseError
-from typing import Optional, List, Dict, Any
-import os
-import logging
-from functools import lru_cache
 
 # Logging Setup
 logger = logging.getLogger(__name__)
@@ -22,6 +24,7 @@ notion = Client(auth=NOTION_TOKEN)
 
 class NotionClientError(Exception):
     """Custom exception for Notion client errors"""
+
     pass
 
 
@@ -36,7 +39,7 @@ def _get_property_value(page: Dict, prop_name: str, prop_type: str) -> Any:
     """Extract property value based on type"""
     try:
         prop = page["properties"].get(prop_name, {})
-        
+
         if prop_type == "title":
             return _extract_text_from_rich_text(prop.get("title", []))
         elif prop_type == "rich_text":
@@ -66,14 +69,14 @@ def parse_page(page: Dict) -> Dict[str, Any]:
         "typ": _get_property_value(page, "Typ", "select"),
         "tags": _get_property_value(page, "Tags", "multi_select"),
         "created_time": page.get("created_time"),
-        "last_edited_time": page.get("last_edited_time")
+        "last_edited_time": page.get("last_edited_time"),
     }
 
 
 def _block_to_text(block: Dict) -> str:
     """Convert a single block to text"""
     block_type = block.get("type")
-    
+
     if block_type == "paragraph":
         return _extract_text_from_rich_text(block["paragraph"].get("rich_text", []))
     elif block_type == "heading_1":
@@ -116,11 +119,7 @@ def get_module_by_name(modul_name: str) -> List[Dict[str, Any]]:
     """Load all entries of a specific module"""
     try:
         response = notion.databases.query(
-            database_id=CODEX_DB_ID,
-            filter={
-                "property": "Modul",
-                "select": {"equals": modul_name}
-            }
+            database_id=CODEX_DB_ID, filter={"property": "Modul", "select": {"equals": modul_name}}
         )
         return [parse_page(page) for page in response["results"]]
     except APIResponseError as e:
@@ -143,19 +142,19 @@ def search_codex(query: str, max_results: int = 20) -> List[Dict[str, Any]]:
     try:
         all_modules = get_all_modules()
         query_lower = query.lower()
-        
+
         results = []
         for module in all_modules:
             titel = (module.get("titel") or "").lower()
             beschreibung = (module.get("beschreibung") or "").lower()
             tags = " ".join(module.get("tags", [])).lower()
-            
+
             if query_lower in titel or query_lower in beschreibung or query_lower in tags:
                 results.append(module)
-                
+
                 if len(results) >= max_results:
                     break
-        
+
         return results
     except Exception as e:
         logger.error(f"Error searching codex: {e}")
@@ -176,11 +175,7 @@ def get_modules_by_tag(tag: str) -> List[Dict[str, Any]]:
     """Filter modules by tag"""
     try:
         response = notion.databases.query(
-            database_id=CODEX_DB_ID,
-            filter={
-                "property": "Tags",
-                "multi_select": {"contains": tag}
-            }
+            database_id=CODEX_DB_ID, filter={"property": "Tags", "multi_select": {"contains": tag}}
         )
         return [parse_page(page) for page in response["results"]]
     except APIResponseError as e:
@@ -191,13 +186,7 @@ def get_modules_by_tag(tag: str) -> List[Dict[str, Any]]:
 def get_modules_by_type(typ: str) -> List[Dict[str, Any]]:
     """Filter modules by type"""
     try:
-        response = notion.databases.query(
-            database_id=CODEX_DB_ID,
-            filter={
-                "property": "Typ",
-                "select": {"equals": typ}
-            }
-        )
+        response = notion.databases.query(database_id=CODEX_DB_ID, filter={"property": "Typ", "select": {"equals": typ}})
         return [parse_page(page) for page in response["results"]]
     except APIResponseError as e:
         logger.error(f"Error filtering by type {typ}: {e}")
