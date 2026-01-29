@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 from mcp.server import Server
 from mcp.types import EmbeddedResource, ImageContent, TextContent, Tool
 
-from .yaml_client import get_statistics  # noqa: F401
 from .yaml_client import (
     YAMLClientError,
     get_all_modules,
