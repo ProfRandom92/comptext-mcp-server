@@ -71,7 +71,7 @@
 
 ### Prerequisites
 
-- Python 3.10+ (3.13 supported)
+- Python 3.10+
 - Optional: [uv](https://github.com/astral-sh/uv) for faster package management
 
 ### Installation
