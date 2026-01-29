@@ -1,0 +1,56 @@
+"""Tests for utility validation functions"""
+
+import pytest
+from comptext_mcp.utils import (
+    validate_github_repo_name,
+    validate_branch_name,
+)
+
+
+def test_validate_github_repo_name_valid():
+    """Test valid GitHub repo names"""
+    assert validate_github_repo_name("comptext-mcp-server") == "comptext-mcp-server"
+    assert validate_github_repo_name("test_repo") == "test_repo"
+    assert validate_github_repo_name("repo.name") == "repo.name"
+    assert validate_github_repo_name("Repo123") == "Repo123"
+
+
+def test_validate_github_repo_name_empty():
+    """Test empty repo name raises error"""
+    with pytest.raises(ValueError, match="cannot be empty"):
+        validate_github_repo_name("")
+    with pytest.raises(ValueError, match="cannot be empty"):
+        validate_github_repo_name("   ")
+
+
+def test_validate_github_repo_name_invalid():
+    """Test invalid repo name raises error"""
+    with pytest.raises(ValueError, match="Invalid"):
+        validate_github_repo_name("repo name")  # Space not allowed
+    with pytest.raises(ValueError, match="Invalid"):
+        validate_github_repo_name("repo@name")  # @ not allowed
+
+
+def test_validate_branch_name_valid():
+    """Test valid branch names"""
+    assert validate_branch_name("main") == "main"
+    assert validate_branch_name("feature/new-feature") == "feature/new-feature"
+    assert validate_branch_name("v1.0.0") == "v1.0.0"
+
+
+def test_validate_branch_name_empty():
+    """Test empty branch name raises error"""
+    with pytest.raises(ValueError, match="cannot be empty"):
+        validate_branch_name("")
+    with pytest.raises(ValueError, match="cannot be empty"):
+        validate_branch_name("   ")
+
+
+def test_validate_branch_name_invalid():
+    """Test invalid branch names raise error"""
+    with pytest.raises(ValueError, match="Invalid"):
+        validate_branch_name("branch name")  # Space not allowed
+    with pytest.raises(ValueError, match="Invalid"):
+        validate_branch_name("branch~1")  # ~ not allowed
+    with pytest.raises(ValueError, match="Invalid"):
+        validate_branch_name("branch:name")  # : not allowed

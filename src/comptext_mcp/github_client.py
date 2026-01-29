@@ -77,7 +77,7 @@ def audit_repository(owner: str, repo: str) -> Dict[str, Any]:
                 "head_branch": pr.head.ref,
                 "base_branch": pr.base.ref,
                 "url": pr.html_url,
-                "is_dependabot": pr.user.login == "dependabot[bot]" or pr.user.login.startswith("dependabot"),
+                "is_dependabot": pr.user.login in ["dependabot[bot]", "dependabot-preview[bot]"],
             }
             open_prs.append(pr_info)
         
@@ -170,6 +170,9 @@ def auto_merge_prs(owner: str, repo: str, merge_method: str = "squash", skip_dra
         audit = audit_repository(owner, repo)
         prs = audit["open_prs"]
         
+        # Count drafts before filtering
+        draft_count = len([pr for pr in prs if pr["draft"]])
+        
         # Filter out drafts if requested
         if skip_drafts:
             prs = [pr for pr in prs if not pr["draft"]]
@@ -202,10 +205,13 @@ def auto_merge_prs(owner: str, repo: str, merge_method: str = "squash", skip_dra
         # Calculate summary
         results["successful_merges"] = len([r for r in results["results"] if r["success"]])
         results["failed_merges"] = len([r for r in results["results"] if not r["success"]])
-        results["skipped_drafts"] = len([r for r in results["results"] if r.get("reason") == "skipped_draft"])
+        results["skipped_drafts"] = draft_count if skip_drafts else 0
         
         return results
+    except GitHubClientError:
+        raise
     except Exception as e:
+        logger.error(f"Failed to auto-merge PRs in {owner}/{repo}: {e}", exc_info=True)
         raise GitHubClientError(f"Failed to auto-merge PRs in {owner}/{repo}: {e}")
 
 

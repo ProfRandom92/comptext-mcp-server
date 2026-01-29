@@ -23,7 +23,7 @@ from .github_client import (
     GitHubClientError,
 )
 from .constants import MODULE_MAP, DEFAULT_MAX_RESULTS
-from .utils import validate_page_id, validate_query_string
+from .utils import validate_page_id, validate_query_string, validate_github_repo_name, validate_branch_name
 
 # Load environment
 load_dotenv()
@@ -31,6 +31,9 @@ load_dotenv()
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Constants
+MAX_BRANCHES_TO_DISPLAY = 10
 
 # Initialize MCP server
 server = Server("comptext-codex")
@@ -307,8 +310,8 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             return [TextContent(type="text", text=output)]
 
         elif name == "github_audit":
-            owner = arguments.get("owner")
-            repo = arguments.get("repo")
+            owner = validate_github_repo_name(arguments.get("owner", ""))
+            repo = validate_github_repo_name(arguments.get("repo", ""))
             
             audit = audit_repository(owner, repo)
             
@@ -320,9 +323,9 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             output += f"**Mergeable PRs:** {audit['mergeable_prs']}\n"
             output += f"**Draft PRs:** {audit['draft_prs']}\n\n"
             
-            # Branches with last commit (show top 10)
+            # Branches with last commit (show top N)
             output += "## Branches (sorted by last commit, newest first)\n\n"
-            for branch in audit['branches'][:10]:
+            for branch in audit['branches'][:MAX_BRANCHES_TO_DISPLAY]:
                 commit = branch['last_commit']
                 output += f"### {branch['name']}\n"
                 output += f"- **Last Commit:** {commit['date']}\n"
@@ -330,8 +333,8 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
                 output += f"- **Message:** {commit['message']}\n"
                 output += f"- **SHA:** {commit['sha'][:7]}\n\n"
             
-            if audit['total_branches'] > 10:
-                output += f"_(showing 10 of {audit['total_branches']} branches)_\n\n"
+            if audit['total_branches'] > MAX_BRANCHES_TO_DISPLAY:
+                output += f"_(showing {MAX_BRANCHES_TO_DISPLAY} of {audit['total_branches']} branches)_\n\n"
             
             # Open PRs
             output += "## Open Pull Requests\n\n"
@@ -352,8 +355,8 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             return [TextContent(type="text", text=output)]
 
         elif name == "github_auto_merge":
-            owner = arguments.get("owner")
-            repo = arguments.get("repo")
+            owner = validate_github_repo_name(arguments.get("owner", ""))
+            repo = validate_github_repo_name(arguments.get("repo", ""))
             merge_method = arguments.get("merge_method", "squash")
             
             results = auto_merge_prs(owner, repo, merge_method=merge_method)
@@ -377,7 +380,8 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
                 
                 if result['success']:
                     output += f"   - **Status:** Merged successfully\n"
-                    output += f"   - **Commit SHA:** {result['sha'][:7]}\n"
+                    if 'sha' in result:
+                        output += f"   - **Commit SHA:** {result['sha'][:7]}\n"
                 else:
                     output += f"   - **Status:** {result['reason']}\n"
                     output += f"   - **Message:** {result['message']}\n"
@@ -387,9 +391,9 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             return [TextContent(type="text", text=output)]
 
         elif name == "github_default_branch_commands":
-            owner = arguments.get("owner")
-            repo = arguments.get("repo")
-            new_default = arguments.get("new_default")
+            owner = validate_github_repo_name(arguments.get("owner", ""))
+            repo = validate_github_repo_name(arguments.get("repo", ""))
+            new_default = validate_branch_name(arguments.get("new_default", ""))
             
             commands = generate_default_branch_commands(owner, repo, new_default)
             
