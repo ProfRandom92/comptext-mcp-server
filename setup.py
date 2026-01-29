@@ -41,8 +41,8 @@ dev_requirements = [
     "mypy>=1.5.0",
 ]
 rest_requirements = [
-    "fastapi>=0.104.0",
-    "uvicorn[standard]>=0.24.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
 ]
 
 setup(

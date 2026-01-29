@@ -8,15 +8,12 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from .registry import Registry
 
-
-def pick_profile_id(audience: str, registry: Registry) -> str:
+def pick_profile_id(audience: str) -> str:
     """Select appropriate profile ID based on audience.
 
     Args:
         audience: Target audience ('dev', 'audit', or 'exec')
-        registry: Registry containing available profiles
 
     Returns:
         Profile ID string (defaults to 'profile.dev.v1' if unknown)
