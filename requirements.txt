@@ -4,3 +4,4 @@ uvicorn[standard]>=0.24.0
 pydantic>=2.0.0
 notion-client>=2.2.1
 python-dotenv>=1.0.0
+PyGithub>=2.1.1

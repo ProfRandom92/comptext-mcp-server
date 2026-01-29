@@ -43,6 +43,7 @@ All services share the same validation, caching, metrics, and security hardening
 - Mobile agent with Ollama/Cloud modes and Prometheus metrics
 - Rate limiting, sanitization, and structured logging
 - Docker support plus Railway/render configs
+- **GitHub repository automation**: Audit, auto-merge PRs, and manage default branches
 
 ## Architecture
 ```
@@ -129,6 +130,7 @@ black . && flake8 && mypy
 - [Quick Start](docs/QUICKSTART.md)
 - [API Reference](docs/API.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
+- [GitHub Automation](docs/GITHUB_AUTOMATION.md)
 - [FAQ](docs/FAQ.md)
 - [Optimization Summary](OPTIMIZATION_SUMMARY.md)
 
