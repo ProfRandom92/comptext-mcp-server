@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { AgentCard } from './agent-card'
-import { mockAgents, type SimplifiedAgentWithMCP } from '../lib/mock-data'
+import { mockAgents, type SimplifiedAgentWithMCP } from '@/lib/mock-data'
 
 export function AgentList() {
   const [agents] = useState<SimplifiedAgentWithMCP[]>(mockAgents)

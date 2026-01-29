@@ -1,8 +1,8 @@
 'use client'
 
-import type { SimplifiedAgentWithMCP } from '../lib/mock-data'
-import { Badge } from './ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import type { SimplifiedAgentWithMCP } from '@/lib/mock-data'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Activity, CheckCircle2, XCircle, AlertCircle, Zap } from 'lucide-react'
 
 interface AgentCardProps {
