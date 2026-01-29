@@ -11,6 +11,21 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Pre-flight checks
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo -e "${RED}Error: Not in a git repository${NC}"
+  exit 1
+fi
+
+if ! git remote get-url origin >/dev/null 2>&1; then
+  echo -e "${RED}Error: Remote 'origin' not found${NC}"
+  exit 1
+fi
+
+# Get repository name dynamically
+REPO_URL=$(git remote get-url origin)
+REPO_NAME=$(echo "$REPO_URL" | sed -E 's|.*/([^/]+/[^/]+)(\.git)?$|\1|' | sed 's|\.git$||')
+
 # List of branches to delete
 branches_to_delete=(
   "copilot/fix-all-errors"
@@ -26,7 +41,7 @@ branches_to_delete=(
 echo -e "${YELLOW}=== Branch Deletion Script ===${NC}"
 echo "This will delete ${#branches_to_delete[@]} branches from the remote repository."
 echo ""
-echo "Repository: ProfRandom92/comptext-mcp-server"
+echo "Repository: $REPO_NAME"
 echo ""
 echo -e "${RED}Branches to be deleted:${NC}"
 for branch in "${branches_to_delete[@]}"; do
@@ -49,11 +64,13 @@ fail_count=0
 
 for branch in "${branches_to_delete[@]}"; do
   echo -n "Deleting: $branch ... "
-  if git push origin --delete "$branch" 2>/dev/null; then
+  ERROR_MSG=$(git push origin --delete "$branch" 2>&1)
+  if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Success${NC}"
     ((success_count++))
   else
     echo -e "${RED}✗ Failed${NC}"
+    echo -e "${RED}  Error: $ERROR_MSG${NC}"
     ((fail_count++))
   fi
 done
