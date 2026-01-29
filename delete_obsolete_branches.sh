@@ -3,8 +3,6 @@
 # Branch Cleanup Script for comptext-mcp-server
 # This script deletes obsolete branches from the remote repository
 
-set -e
-
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -64,12 +62,12 @@ fail_count=0
 
 for branch in "${branches_to_delete[@]}"; do
   echo -n "Deleting: $branch ... "
-  ERROR_MSG=$(git push origin --delete "$branch" 2>&1)
-  if [ $? -eq 0 ]; then
+  if git push origin --delete "$branch" 2>&1 | tee /tmp/git_error.txt >/dev/null; then
     echo -e "${GREEN}✓ Success${NC}"
     ((success_count++))
   else
     echo -e "${RED}✗ Failed${NC}"
+    ERROR_MSG=$(cat /tmp/git_error.txt)
     echo -e "${RED}  Error: $ERROR_MSG${NC}"
     ((fail_count++))
   fi

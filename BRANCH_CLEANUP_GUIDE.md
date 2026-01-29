@@ -157,63 +157,25 @@ git remote prune origin
 
 **⚠️ WARNING: This script will permanently delete branches from GitHub. Review carefully before executing.**
 
+A production-ready script `delete_obsolete_branches.sh` is included in this repository with the following features:
+- Pre-flight validation (git repository and origin remote checks)
+- Dynamic repository name extraction
+- Detailed error messages for troubleshooting
+- User confirmation before deletion
+- Color-coded output
+- Summary statistics
+
+To use the script:
 ```bash
-#!/bin/bash
-
-# List of branches to delete
-branches_to_delete=(
-  "copilot/fix-all-errors"
-  "copilot/fix-functionality-issues"
-  "copilot/fix-issues-in-backend"
-  "copilot/fix-pull-request-24"
-  "copilot/fix-server-configuration-issue"
-  "copilot/fix-test-reference-issue"
-  "copilot/create-sub-issue-for-issue-40"
-  "v0/frauschnegg-4034-49317aa2"
-)
-
-echo "=== Branch Deletion Script ==="
-echo "This will delete ${#branches_to_delete[@]} branches from the remote repository."
-echo ""
-echo "Branches to be deleted:"
-for branch in "${branches_to_delete[@]}"; do
-  echo "  - $branch"
-done
-echo ""
-read -p "Are you sure you want to proceed? (yes/no): " confirmation
-
-if [ "$confirmation" != "yes" ]; then
-  echo "Aborted."
-  exit 1
-fi
-
-echo ""
-echo "Deleting branches..."
-for branch in "${branches_to_delete[@]}"; do
-  echo "Deleting: $branch"
-  git push origin --delete "$branch"
-  if [ $? -eq 0 ]; then
-    echo "  ✓ Deleted successfully"
-  else
-    echo "  ✗ Failed to delete"
-  fi
-done
-
-echo ""
-echo "Cleanup complete!"
-echo ""
-echo "Don't forget to:"
-echo "1. Close associated pull requests on GitHub"
-echo "2. Run 'git fetch --all --prune' to update your local repository"
+chmod +x delete_obsolete_branches.sh
+./delete_obsolete_branches.sh
 ```
-
-Save this script as `delete_branches.sh`, make it executable with `chmod +x delete_branches.sh`, and run it when ready.
 
 ---
 
 ## Alternative: Manual Deletion via GitHub UI
 
-1. Go to https://github.com/ProfRandom92/comptext-mcp-server/branches
+1. Go to the branches page in your repository (Settings → Branches or `/branches` URL path)
 2. For each branch to delete, click the trash icon
 3. Confirm the deletion
 
