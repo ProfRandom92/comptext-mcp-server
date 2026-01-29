@@ -1,12 +1,12 @@
 'use client'
 
-import { AgentWithMCP } from '@/types/agent-mcp'
+import { SimplifiedAgentWithMCP } from '@/lib/mock-data'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Activity, CheckCircle2, XCircle, AlertCircle, Zap } from 'lucide-react'
 
 interface AgentCardProps {
-  agent: AgentWithMCP
+  agent: SimplifiedAgentWithMCP
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
@@ -48,7 +48,7 @@ export function AgentCard({ agent }: AgentCardProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-slate-600">Status</span>
+          <span className="text-sm text-muted-foreground">Status</span>
           <Badge variant="outline" className={config.bg}>
             {config.label}
           </Badge>
@@ -56,14 +56,14 @@ export function AgentCard({ agent }: AgentCardProps) {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-600">MCP Verbindung</span>
+            <span className="text-muted-foreground">MCP Verbindung</span>
             <div className="flex items-center gap-2">
               <div className={`h-2 w-2 rounded-full ${connectionConfig.color}`} />
               <span className="text-xs font-medium">{connectionConfig.label}</span>
             </div>
           </div>
 
-          <div className="text-xs text-slate-500 bg-slate-50 rounded p-2 font-mono truncate">
+          <div className="text-xs text-muted-foreground bg-muted rounded p-2 font-mono truncate">
             {agent.mcpConnection.url}
           </div>
         </div>
@@ -71,16 +71,16 @@ export function AgentCard({ agent }: AgentCardProps) {
         {agent.mcpConnection.metrics && (
           <div className="grid grid-cols-2 gap-3 pt-3 border-t">
             <div className="space-y-1">
-              <div className="flex items-center gap-1 text-xs text-slate-600">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Zap className="h-3 w-3" />
                 <span>Anfragen</span>
               </div>
-              <p className="text-lg font-semibold text-slate-900">
+              <p className="text-lg font-semibold text-foreground">
                 {agent.mcpConnection.metrics.requestCount}
               </p>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-600">Erfolgsrate</div>
+              <div className="text-xs text-muted-foreground">Erfolgsrate</div>
               <p className="text-lg font-semibold text-emerald-600">
                 {agent.mcpConnection.metrics.successRate.toFixed(1)}%
               </p>
@@ -90,7 +90,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 
         {agent.config.capabilities && agent.config.capabilities.length > 0 && (
           <div className="pt-3 border-t">
-            <div className="text-xs text-slate-600 mb-2">Fähigkeiten</div>
+            <div className="text-xs text-muted-foreground mb-2">Capabilities</div>
             <div className="flex flex-wrap gap-1">
               {agent.config.capabilities.slice(0, 3).map((cap) => (
                 <Badge key={cap} variant="secondary" className="text-xs">

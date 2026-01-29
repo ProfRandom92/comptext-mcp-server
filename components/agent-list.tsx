@@ -2,18 +2,17 @@
 
 import { useState } from 'react'
 import { AgentCard } from './agent-card'
-import { AgentWithMCP } from '@/types/agent-mcp'
-import { mockAgents } from '@/lib/mock-data'
+import { mockAgents, SimplifiedAgentWithMCP } from '@/lib/mock-data'
 
 export function AgentList() {
-  const [agents] = useState<AgentWithMCP[]>(mockAgents)
+  const [agents] = useState<SimplifiedAgentWithMCP[]>(mockAgents)
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Aktive Agenten</h2>
-          <p className="text-sm text-slate-600 mt-1">
+          <h2 className="text-2xl font-bold text-foreground">Aktive Agenten</h2>
+          <p className="text-sm text-muted-foreground mt-1">
             {agents.length} Agent{agents.length !== 1 ? 'en' : ''} mit MCP-Verbindung
           </p>
         </div>
