@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from .registry import Registry
-
 
 def pick_profile_id(audience: str) -> str:
     """Select appropriate profile ID based on audience.
