@@ -50,7 +50,10 @@ echo -e "${YELLOW}⚠️  WARNING: This action cannot be undone!${NC}"
 echo ""
 read -p "Are you sure you want to proceed? (yes/no): " confirmation
 
-if [ "$confirmation" != "yes" ]; then
+# Convert to lowercase for case-insensitive comparison
+confirmation=$(echo "$confirmation" | tr '[:upper:]' '[:lower:]')
+
+if [ "$confirmation" != "yes" ] && [ "$confirmation" != "y" ]; then
   echo -e "${YELLOW}Aborted.${NC}"
   exit 1
 fi
@@ -60,14 +63,18 @@ echo -e "${GREEN}Deleting branches...${NC}"
 success_count=0
 fail_count=0
 
+# Use a unique temporary file
+TEMP_ERROR_FILE=$(mktemp)
+trap "rm -f $TEMP_ERROR_FILE" EXIT
+
 for branch in "${branches_to_delete[@]}"; do
   echo -n "Deleting: $branch ... "
-  if git push origin --delete "$branch" 2>&1 | tee /tmp/git_error.txt >/dev/null; then
+  if git push origin --delete "$branch" 2>&1 | tee "$TEMP_ERROR_FILE" >/dev/null; then
     echo -e "${GREEN}✓ Success${NC}"
     ((success_count++))
   else
     echo -e "${RED}✗ Failed${NC}"
-    ERROR_MSG=$(cat /tmp/git_error.txt)
+    ERROR_MSG=$(cat "$TEMP_ERROR_FILE")
     echo -e "${RED}  Error: $ERROR_MSG${NC}"
     ((fail_count++))
   fi

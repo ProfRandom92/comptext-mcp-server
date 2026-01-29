@@ -175,9 +175,10 @@ chmod +x delete_obsolete_branches.sh
 
 ## Alternative: Manual Deletion via GitHub UI
 
-1. Go to the branches page in your repository (Settings → Branches or `/branches` URL path)
-2. For each branch to delete, click the trash icon
-3. Confirm the deletion
+1. Go to the repository on GitHub
+2. Click on the branches link (e.g., "X branches" near the top of the Code tab, or navigate to `/branches` in your repo URL)
+3. For each branch to delete, click the trash icon
+4. Confirm the deletion
 
 ---
 
