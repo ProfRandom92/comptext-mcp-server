@@ -73,29 +73,25 @@ class TestCanonicalize:
 
     def test_pick_profile_dev(self):
         """Test profile selection for dev audience."""
-        reg = load_registry()
-        assert pick_profile_id("dev", reg) == "profile.dev.v1"
-        assert pick_profile_id("developer", reg) == "profile.dev.v1"
-        assert pick_profile_id("DEV", reg) == "profile.dev.v1"
+        assert pick_profile_id("dev") == "profile.dev.v1"
+        assert pick_profile_id("developer") == "profile.dev.v1"
+        assert pick_profile_id("DEV") == "profile.dev.v1"
 
     def test_pick_profile_audit(self):
         """Test profile selection for audit audience."""
-        reg = load_registry()
-        assert pick_profile_id("audit", reg) == "profile.audit.v1"
-        assert pick_profile_id("AUDIT", reg) == "profile.audit.v1"
+        assert pick_profile_id("audit") == "profile.audit.v1"
+        assert pick_profile_id("AUDIT") == "profile.audit.v1"
 
     def test_pick_profile_exec(self):
         """Test profile selection for exec audience."""
-        reg = load_registry()
-        assert pick_profile_id("exec", reg) == "profile.exec.v1"
-        assert pick_profile_id("EXEC", reg) == "profile.exec.v1"
+        assert pick_profile_id("exec") == "profile.exec.v1"
+        assert pick_profile_id("EXEC") == "profile.exec.v1"
 
     def test_pick_profile_default(self):
         """Test default profile selection for unknown audience."""
-        reg = load_registry()
-        assert pick_profile_id("unknown", reg) == "profile.dev.v1"
-        assert pick_profile_id("", reg) == "profile.dev.v1"
-        assert pick_profile_id(None, reg) == "profile.dev.v1"
+        assert pick_profile_id("unknown") == "profile.dev.v1"
+        assert pick_profile_id("") == "profile.dev.v1"
+        assert pick_profile_id(None) == "profile.dev.v1"
 
     def test_render_dsl_simple(self):
         """Test simple DSL rendering."""
