@@ -16,8 +16,14 @@ from .notion_client import (
     get_modules_by_type,
     NotionClientError,
 )
+from .github_client import (
+    audit_repository,
+    auto_merge_prs,
+    generate_default_branch_commands,
+    GitHubClientError,
+)
 from .constants import MODULE_MAP, DEFAULT_MAX_RESULTS
-from .utils import validate_page_id, validate_query_string
+from .utils import validate_page_id, validate_query_string, validate_github_repo_name, validate_branch_name
 
 # Load environment
 load_dotenv()
@@ -25,6 +31,9 @@ load_dotenv()
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Constants
+MAX_BRANCHES_TO_DISPLAY = 10
 
 # Initialize MCP server
 server = Server("comptext-codex")
@@ -109,6 +118,49 @@ async def list_tools() -> List[Tool]:
             name="get_statistics",
             description="Zeige Statistiken über den CompText-Codex",
             inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="github_audit",
+            description="Audit eines GitHub-Repositories: Default-Branch, alle Branches mit letztem Commit, offene PRs, Draft-Status und Mergeable-State",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "owner": {"type": "string", "description": "Repository-Owner (z.B. ProfRandom92)"},
+                    "repo": {"type": "string", "description": "Repository-Name (z.B. comptext-mcp-server)"},
+                },
+                "required": ["owner", "repo"],
+            },
+        ),
+        Tool(
+            name="github_auto_merge",
+            description="Automatisches Mergen aller nicht-draft PRs (squash & merge) von ältesten zu neuesten, inkl. Dependabot",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "owner": {"type": "string", "description": "Repository-Owner"},
+                    "repo": {"type": "string", "description": "Repository-Name"},
+                    "merge_method": {
+                        "type": "string",
+                        "description": "Merge-Methode",
+                        "enum": ["squash", "merge", "rebase"],
+                        "default": "squash"
+                    },
+                },
+                "required": ["owner", "repo"],
+            },
+        ),
+        Tool(
+            name="github_default_branch_commands",
+            description="Generiere Befehle zum manuellen Ändern des Default-Branch (gh CLI, curl, Web-UI)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "owner": {"type": "string", "description": "Repository-Owner"},
+                    "repo": {"type": "string", "description": "Repository-Name"},
+                    "new_default": {"type": "string", "description": "Neuer Default-Branch Name"},
+                },
+                "required": ["owner", "repo", "new_default"],
+            },
         ),
     ]
 
@@ -257,9 +309,120 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
 
             return [TextContent(type="text", text=output)]
 
+        elif name == "github_audit":
+            owner = validate_github_repo_name(arguments.get("owner", ""))
+            repo = validate_github_repo_name(arguments.get("repo", ""))
+            
+            audit = audit_repository(owner, repo)
+            
+            # Format output
+            output = f"# GitHub Repository Audit: {owner}/{repo}\n\n"
+            output += f"**Default Branch:** {audit['default_branch']}\n"
+            output += f"**Total Branches:** {audit['total_branches']}\n"
+            output += f"**Total Open PRs:** {audit['total_open_prs']}\n"
+            output += f"**Mergeable PRs:** {audit['mergeable_prs']}\n"
+            output += f"**Draft PRs:** {audit['draft_prs']}\n\n"
+            
+            # Branches with last commit (show top N)
+            output += "## Branches (sorted by last commit, newest first)\n\n"
+            for branch in audit['branches'][:MAX_BRANCHES_TO_DISPLAY]:
+                commit = branch['last_commit']
+                output += f"### {branch['name']}\n"
+                output += f"- **Last Commit:** {commit['date']}\n"
+                output += f"- **Author:** {commit['author']}\n"
+                output += f"- **Message:** {commit['message']}\n"
+                output += f"- **SHA:** {commit['sha'][:7]}\n\n"
+            
+            if audit['total_branches'] > MAX_BRANCHES_TO_DISPLAY:
+                output += f"_(showing {MAX_BRANCHES_TO_DISPLAY} of {audit['total_branches']} branches)_\n\n"
+            
+            # Open PRs
+            output += "## Open Pull Requests\n\n"
+            if audit['open_prs']:
+                for pr in audit['open_prs']:
+                    output += f"### PR #{pr['number']}: {pr['title']}\n"
+                    output += f"- **Author:** {pr['author']}\n"
+                    output += f"- **Created:** {pr['created_at']}\n"
+                    output += f"- **Draft:** {'Yes' if pr['draft'] else 'No'}\n"
+                    output += f"- **Mergeable:** {pr['mergeable']}\n"
+                    output += f"- **State:** {pr['mergeable_state']}\n"
+                    output += f"- **Branch:** {pr['head_branch']} → {pr['base_branch']}\n"
+                    output += f"- **Dependabot:** {'Yes' if pr['is_dependabot'] else 'No'}\n"
+                    output += f"- **URL:** {pr['url']}\n\n"
+            else:
+                output += "No open pull requests.\n"
+            
+            return [TextContent(type="text", text=output)]
+
+        elif name == "github_auto_merge":
+            owner = validate_github_repo_name(arguments.get("owner", ""))
+            repo = validate_github_repo_name(arguments.get("repo", ""))
+            merge_method = arguments.get("merge_method", "squash")
+            
+            results = auto_merge_prs(owner, repo, merge_method=merge_method)
+            
+            # Format output
+            output = f"# Auto-Merge Results: {owner}/{repo}\n\n"
+            output += f"**Total PRs Processed:** {results['total_prs']}\n"
+            output += f"**Merge Method:** {results['merge_method']}\n"
+            output += f"**Successful Merges:** {results['successful_merges']}\n"
+            output += f"**Failed Merges:** {results['failed_merges']}\n"
+            output += f"**Skipped Drafts:** {results['skipped_drafts']}\n\n"
+            
+            if results.get('stopped_early'):
+                output += f"⚠️ **Stopped Early:** {results['stop_reason']}\n\n"
+            
+            output += "## Detailed Results\n\n"
+            for result in results['results']:
+                status = "✓" if result['success'] else "✗"
+                output += f"{status} **PR #{result['pr_number']}:** {result['pr_title']}\n"
+                output += f"   - **Author:** {result['pr_author']}\n"
+                
+                if result['success']:
+                    output += f"   - **Status:** Merged successfully\n"
+                    if 'sha' in result:
+                        output += f"   - **Commit SHA:** {result['sha'][:7]}\n"
+                else:
+                    output += f"   - **Status:** {result['reason']}\n"
+                    output += f"   - **Message:** {result['message']}\n"
+                
+                output += "\n"
+            
+            return [TextContent(type="text", text=output)]
+
+        elif name == "github_default_branch_commands":
+            owner = validate_github_repo_name(arguments.get("owner", ""))
+            repo = validate_github_repo_name(arguments.get("repo", ""))
+            new_default = validate_branch_name(arguments.get("new_default", ""))
+            
+            commands = generate_default_branch_commands(owner, repo, new_default)
+            
+            # Format output
+            output = f"# Change Default Branch: {owner}/{repo} → {new_default}\n\n"
+            output += f"**Note:** {commands['note']}\n\n"
+            
+            output += "## Using GitHub CLI (gh)\n\n"
+            output += "```bash\n"
+            output += commands['commands']['gh_cli']
+            output += "\n```\n\n"
+            
+            output += "## Using curl\n\n"
+            output += "```bash\n"
+            output += commands['commands']['curl']
+            output += "\n```\n\n"
+            
+            output += "## Using Web UI\n\n"
+            output += commands['commands']['web_ui']
+            output += "\n"
+            
+            return [TextContent(type="text", text=output)]
+
         else:
             raise ValueError(f"Unknown tool: {name}")
 
+    except GitHubClientError as e:
+        logger.error(f"GitHub client error: {e}")
+        return [TextContent(type="text", text=f"GitHub Error: {str(e)}")]
     except NotionClientError as e:
         logger.error(f"Notion client error: {e}")
         return [TextContent(type="text", text=f"Error: {str(e)}")]
