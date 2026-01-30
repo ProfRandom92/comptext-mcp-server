@@ -237,8 +237,8 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
 
             for result in results:
                 output += f"### {result['titel']}\n"
-                 if result.get("beschreibung"):
-                     output += f"{truncate_text(result['beschreibung'], max_length=320)}\n"
+                if result.get("beschreibung"):
+                    output += f"{truncate_text(result['beschreibung'], max_length=320)}\n"
                 output += f"- **Modul:** {result.get('modul', 'N/A')}\n"
                 output += f"- **Typ:** {result.get('typ', 'N/A')}\n"
                 output += f"- **Tags:** {', '.join(result.get('tags', []))}\n"
