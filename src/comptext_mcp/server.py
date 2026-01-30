@@ -23,7 +23,13 @@ from .github_client import (
     GitHubClientError,
 )
 from .constants import MODULE_MAP, DEFAULT_MAX_RESULTS
-from .utils import validate_page_id, validate_query_string, validate_github_repo_name, validate_branch_name
+from .utils import (
+    validate_page_id,
+    validate_query_string,
+    validate_github_repo_name,
+    validate_branch_name,
+    truncate_text,
+)
 
 # Load environment
 load_dotenv()
@@ -206,7 +212,7 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             for entry in entries:
                 output += f"### {entry['titel']}\n"
                 if entry.get("beschreibung"):
-                    output += f"{entry['beschreibung']}\n"
+                    output += f"{truncate_text(entry['beschreibung'], max_length=320)}\n"
                 output += f"- **Typ:** {entry.get('typ', 'N/A')}\n"
                 output += f"- **Tags:** {', '.join(entry.get('tags', []))}\n"
                 output += f"- **ID:** {entry['id']}\n"
@@ -218,7 +224,7 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             page_id = validate_page_id(arguments.get("page_id"))
             content = get_page_content(page_id)
 
-            return [TextContent(type="text", text=content)]
+            return [TextContent(type="text", text=truncate_text(content, max_length=4000))]
 
         elif name == "search":
             query = validate_query_string(arguments.get("query"))
@@ -231,8 +237,8 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
 
             for result in results:
                 output += f"### {result['titel']}\n"
-                if result.get("beschreibung"):
-                    output += f"{result['beschreibung']}\n"
+                 if result.get("beschreibung"):
+                     output += f"{truncate_text(result['beschreibung'], max_length=320)}\n"
                 output += f"- **Modul:** {result.get('modul', 'N/A')}\n"
                 output += f"- **Typ:** {result.get('typ', 'N/A')}\n"
                 output += f"- **Tags:** {', '.join(result.get('tags', []))}\n"

@@ -4,6 +4,7 @@ import pytest
 from comptext_mcp.utils import (
     validate_github_repo_name,
     validate_branch_name,
+    truncate_text,
 )
 
 
@@ -54,3 +55,11 @@ def test_validate_branch_name_invalid():
         validate_branch_name("branch~1")  # ~ not allowed
     with pytest.raises(ValueError, match="Invalid"):
         validate_branch_name("branch:name")  # : not allowed
+
+
+def test_truncate_text_token_efficiency():
+    """Truncates long NL text to preserve tokens (max_length respected)."""
+    text = "Dies ist ein sehr langer natürlicher Sprachbefehl für Claude, der gekürzt werden sollte, um Tokens zu sparen."
+    truncated = truncate_text(text, max_length=50, suffix="…")
+    assert truncated.endswith("…")
+    assert len(truncated) == 50
