@@ -58,8 +58,21 @@ def test_validate_branch_name_invalid():
 
 
 def test_truncate_text_token_efficiency():
-    """Truncates long NL text to preserve tokens (max_length respected)."""
+    """Truncates long NL text with custom suffix to preserve tokens."""
     text = "Dies ist ein sehr langer natürlicher Sprachbefehl für Claude, der gekürzt werden sollte, um Tokens zu sparen."
     truncated = truncate_text(text, max_length=50, suffix="…")
     assert truncated.endswith("…")
     assert len(truncated) == 50
+    assert "Tokens zu sparen" not in truncated
+
+
+def test_truncate_text_no_truncation_needed():
+    """Returns original text when below limit (no extra tokens)."""
+    text = "Kurzer NL Befehl"
+    truncated = truncate_text(text, max_length=50, suffix="…")
+    assert truncated == text
+
+
+def test_truncate_text_empty():
+    """Handles empty text safely for NL flows."""
+    assert truncate_text("", max_length=10) == ""
