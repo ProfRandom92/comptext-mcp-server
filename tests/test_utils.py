@@ -57,6 +57,16 @@ def test_validate_branch_name_invalid():
         validate_branch_name("branch:name")  # : not allowed
 
 
+def test_validate_page_id_empty_and_uuid():
+    """Page ID validation handles empty and UUID inputs."""
+    with pytest.raises(ValueError, match="cannot be empty"):
+        validate_page_id("")
+    import uuid
+    uid = uuid.uuid4()
+    normalized = validate_page_id(uid.hex)
+    assert normalized == uid.hex
+
+
 def test_truncate_text_token_efficiency():
     """Truncates long NL text with custom suffix to preserve tokens."""
     text = "Dies ist ein sehr langer natürlicher Sprachbefehl für Claude, der gekürzt werden sollte, um Tokens zu sparen."
