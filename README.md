@@ -1,7 +1,7 @@
 # 🚀 CompText MCP Server
 ### Token-efficient DSL server for MCP, REST, and mobile agents
 
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/ProfRandom92/comptext-mcp-server/blob/main/VERSION)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![MCP SDK 1.1.0](https://img.shields.io/badge/MCP-1.1.0-00D4AA.svg)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
