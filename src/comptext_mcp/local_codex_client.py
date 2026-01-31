@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 from pathlib import Path
 
 from .constants import CACHE_SIZE, DEFAULT_DATA_PATH
-from .utils import validate_page_id, validate_query_string, sanitize_text_output
+from .utils import validate_query_string, sanitize_text_output
 
 # Logging Setup
 logger = logging.getLogger(__name__)
