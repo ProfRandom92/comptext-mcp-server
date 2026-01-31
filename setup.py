@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 # Read requirements
 def read_requirements(filename):
     with open(filename, "r", encoding="utf-8") as f:
-        return [line.strip() for line in f if line.strip() and not line.startswith("#")]
+        return [line.strip() for line in f if line.strip() and not line.startswith("#") and not line.startswith("-r")]
 
 base_requirements = read_requirements("requirements.txt")
 dev_requirements = read_requirements("requirements-dev.txt")

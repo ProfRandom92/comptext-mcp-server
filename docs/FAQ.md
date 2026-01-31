@@ -76,7 +76,23 @@ No, free Notion accounts work perfectly.
 
 ### Can I use my own Notion database?
 
-Yes! The default uses our CompText Codex, but you can configure any Notion database with similar structure.
+Yes! The default uses our CompText Codex, but you can configure any Notion database with similar structure, or use a local JSON file instead.
+
+### Do I need a Notion account?
+
+No! As of version 1.0, the server supports local JSON files as the default data source. Notion is now optional and only needed if you want to use Notion as your data backend.
+
+### How do I switch between Notion and local JSON?
+
+Set the `COMPTEXT_DATA_SOURCE` environment variable to either "local" (default) or "notion". See [MIGRATION.md](MIGRATION.md) for details.
+
+### Where is the local codex data stored?
+
+By default in `data/codex.json`. You can change this with the `COMPTEXT_CODEX_PATH` environment variable.
+
+### Can I add my own modules to the local codex?
+
+Yes! Edit `data/codex.json` and add your modules following the JSON schema. The server will automatically load them on restart.
 
 ### What database structure is required?
 

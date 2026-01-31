@@ -2,20 +2,42 @@
 
 import asyncio
 import logging
+import os
 from typing import Any, Sequence, List
 from mcp.server import Server
 from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 from dotenv import load_dotenv
 
-from .notion_client import (
-    get_all_modules,
-    get_module_by_name,
-    get_page_content,
-    search_codex,
-    get_modules_by_tag,
-    get_modules_by_type,
-    NotionClientError,
-)
+# Load environment first
+load_dotenv()
+
+# Determine data source
+DATA_SOURCE = os.getenv("COMPTEXT_DATA_SOURCE", "local").lower()
+
+# Import appropriate client based on configuration
+if DATA_SOURCE == "notion":
+    from .notion_client import (
+        get_all_modules,
+        get_module_by_name,
+        get_page_content,
+        search_codex,
+        get_modules_by_tag,
+        get_modules_by_type,
+        NotionClientError as CodexClientError,
+    )
+    logger_msg = "Using Notion API as data source"
+else:
+    from .local_codex_client import (
+        get_all_modules,
+        get_module_by_name,
+        get_page_content,
+        search_codex,
+        get_modules_by_tag,
+        get_modules_by_type,
+        LocalCodexClientError as CodexClientError,
+    )
+    logger_msg = "Using local JSON file as data source"
+
 from .github_client import (
     audit_repository,
     auto_merge_prs,
@@ -23,14 +45,18 @@ from .github_client import (
     GitHubClientError,
 )
 from .constants import MODULE_MAP, DEFAULT_MAX_RESULTS
-from .utils import validate_page_id, validate_query_string, validate_github_repo_name, validate_branch_name
-
-# Load environment
-load_dotenv()
+from .utils import (
+    validate_page_id,
+    validate_query_string,
+    validate_github_repo_name,
+    validate_branch_name,
+    truncate_text,
+)
 
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.info(logger_msg)
 
 # Constants
 MAX_BRANCHES_TO_DISPLAY = 10
@@ -162,6 +188,20 @@ async def list_tools() -> List[Tool]:
                 "required": ["owner", "repo", "new_default"],
             },
         ),
+        Tool(
+            name="nl_to_comptext",
+            description="Konvertiere Natural Language in kanonisches CompText (Bundle-first)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "text": {"type": "string", "description": "Natural language request"},
+                    "audience": {"type": "string", "enum": ["dev", "audit", "exec"], "default": "dev"},
+                    "mode": {"type": "string", "enum": ["bundle_only", "allow_inline_fallback"], "default": "bundle_only"},
+                    "return": {"type": "string", "enum": ["dsl_only", "dsl_plus_confidence", "dsl_plus_explanation"], "default": "dsl_plus_confidence"},
+                },
+                "required": ["text"],
+            },
+        )
     ]
 
 
@@ -206,7 +246,7 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             for entry in entries:
                 output += f"### {entry['titel']}\n"
                 if entry.get("beschreibung"):
-                    output += f"{entry['beschreibung']}\n"
+                    output += f"{truncate_text(entry['beschreibung'], max_length=320)}\n"
                 output += f"- **Typ:** {entry.get('typ', 'N/A')}\n"
                 output += f"- **Tags:** {', '.join(entry.get('tags', []))}\n"
                 output += f"- **ID:** {entry['id']}\n"
@@ -215,10 +255,13 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             return [TextContent(type="text", text=output)]
 
         elif name == "get_command":
-            page_id = validate_page_id(arguments.get("page_id"))
+            page_id = arguments.get("page_id")
+            # For local codex, don't validate UUID format as IDs are custom
+            if DATA_SOURCE != "local":
+                page_id = validate_page_id(page_id)
             content = get_page_content(page_id)
 
-            return [TextContent(type="text", text=content)]
+            return [TextContent(type="text", text=truncate_text(content, max_length=4000))]
 
         elif name == "search":
             query = validate_query_string(arguments.get("query"))
@@ -232,7 +275,7 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             for result in results:
                 output += f"### {result['titel']}\n"
                 if result.get("beschreibung"):
-                    output += f"{result['beschreibung']}\n"
+                    output += f"{truncate_text(result['beschreibung'], max_length=320)}\n"
                 output += f"- **Modul:** {result.get('modul', 'N/A')}\n"
                 output += f"- **Typ:** {result.get('typ', 'N/A')}\n"
                 output += f"- **Tags:** {', '.join(result.get('tags', []))}\n"
@@ -417,14 +460,24 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             
             return [TextContent(type="text", text=output)]
 
+        elif name == "nl_to_comptext":
+            from .compiler.nl_to_comptext import compile_nl_to_comptext
+            result = compile_nl_to_comptext(
+                text=arguments.get("text", ""),
+                audience=arguments.get("audience", "dev"),
+                mode=arguments.get("mode", "bundle_only"),
+                return_mode=arguments.get("return", "dsl_plus_confidence"),
+            )
+            return [TextContent(type="text", text=result)]
+
         else:
             raise ValueError(f"Unknown tool: {name}")
 
     except GitHubClientError as e:
         logger.error(f"GitHub client error: {e}")
         return [TextContent(type="text", text=f"GitHub Error: {str(e)}")]
-    except NotionClientError as e:
-        logger.error(f"Notion client error: {e}")
+    except CodexClientError as e:
+        logger.error(f"Codex client error: {e}")
         return [TextContent(type="text", text=f"Error: {str(e)}")]
     except ValueError as e:
         logger.error(f"Validation error: {e}")

@@ -17,6 +17,11 @@ def validate_page_id(page_id: str) -> str:
     Raises:
         ValueError: If page ID format is invalid
     """
+    if not page_id or not str(page_id).strip():
+        raise ValueError("Page ID cannot be empty")
+
+    # Normalize to string in case callers pass UUID objects
+    page_id = str(page_id)
     # Remove dashes
     clean_id = page_id.replace("-", "")
 

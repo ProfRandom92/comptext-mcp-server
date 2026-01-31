@@ -4,6 +4,7 @@ import pytest
 from comptext_mcp.utils import (
     validate_github_repo_name,
     validate_branch_name,
+    truncate_text,
 )
 
 
@@ -54,3 +55,34 @@ def test_validate_branch_name_invalid():
         validate_branch_name("branch~1")  # ~ not allowed
     with pytest.raises(ValueError, match="Invalid"):
         validate_branch_name("branch:name")  # : not allowed
+
+
+def test_validate_page_id_empty_and_uuid():
+    """Page ID validation handles empty and UUID inputs."""
+    with pytest.raises(ValueError, match="cannot be empty"):
+        validate_page_id("")
+    import uuid
+    uid = uuid.uuid4()
+    normalized = validate_page_id(uid.hex)
+    assert normalized == uid.hex
+
+
+def test_truncate_text_token_efficiency():
+    """Truncates long NL text with custom suffix to preserve tokens."""
+    text = "Dies ist ein sehr langer natürlicher Sprachbefehl für Claude, der gekürzt werden sollte, um Tokens zu sparen."
+    truncated = truncate_text(text, max_length=50, suffix="…")
+    assert truncated.endswith("…")
+    assert len(truncated) == 50
+    assert "Tokens zu sparen" not in truncated
+
+
+def test_truncate_text_no_truncation_needed():
+    """Returns original text when below limit (no extra tokens)."""
+    text = "Kurzer NL Befehl"
+    truncated = truncate_text(text, max_length=50, suffix="…")
+    assert truncated == text
+
+
+def test_truncate_text_empty():
+    """Handles empty text safely for NL flows."""
+    assert truncate_text("", max_length=10) == ""

@@ -1,0 +1,190 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "title": "CompText Codex",
+    "description": "Domain-Specific Language for efficient LLM interaction",
+    "last_updated": "2024-01-31"
+  },
+  "modules": [
+    {
+      "id": "module-a-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Datei Operationen",
+      "beschreibung": "Grundlegende Dateioperationen wie Lesen, Schreiben und Löschen",
+      "modul": "Modul A: Allgemeine Befehle",
+      "typ": "Dokumentation",
+      "tags": ["Core", "Basis"],
+      "created_time": "2024-01-01T00:00:00.000Z",
+      "last_edited_time": "2024-01-15T00:00:00.000Z",
+      "content": "# Datei Operationen\n\n## Übersicht\nGrundlegende Befehle für Dateioperationen.\n\n## Verwendung\n```\n@FILE_READ[path]\n@FILE_WRITE[path, content]\n@FILE_DELETE[path]\n```"
+    },
+    {
+      "id": "module-a-002",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Workflow Automation",
+      "beschreibung": "Automatisierung von wiederkehrenden Aufgaben und Workflows",
+      "modul": "Modul A: Allgemeine Befehle",
+      "typ": "Beispiel",
+      "tags": ["Core", "Automation"],
+      "created_time": "2024-01-02T00:00:00.000Z",
+      "last_edited_time": "2024-01-16T00:00:00.000Z",
+      "content": "# Workflow Automation\n\n## Beispiele\n\n### Batch Processing\n```\n@WORKFLOW[batch_process] {\n  @FILE_LIST[*.txt] -> @PROCESS[transform] -> @FILE_SAVE[output/]\n}\n```"
+    },
+    {
+      "id": "module-b-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Code Analyse",
+      "beschreibung": "Analyse von Code auf Performance, Qualität und Sicherheit",
+      "modul": "Modul B: Programmierung",
+      "typ": "Dokumentation",
+      "tags": ["Core", "Analyse"],
+      "created_time": "2024-01-03T00:00:00.000Z",
+      "last_edited_time": "2024-01-17T00:00:00.000Z",
+      "content": "# Code Analyse\n\n## Kommandos\n\n### Performance Analyse\n```\n@CODE_ANALYZE[perf_bottleneck]\n```\n\n### Qualitätsmetriken\n```\n@CODE_METRICS[complexity, maintainability]\n```"
+    },
+    {
+      "id": "module-b-002",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Code Optimierung",
+      "beschreibung": "Optimierung von Code für bessere Performance und Lesbarkeit",
+      "modul": "Modul B: Programmierung",
+      "typ": "Beispiel",
+      "tags": ["Erweitert", "Optimierung"],
+      "created_time": "2024-01-04T00:00:00.000Z",
+      "last_edited_time": "2024-01-18T00:00:00.000Z",
+      "content": "# Code Optimierung\n\n## Beispiel: Performance Optimierung\n\n```python\n# Vorher\nfor i in range(len(data)):\n    process(data[i])\n\n# Nachher\nfor item in data:\n    process(item)\n```\n\n## Verwendung\n```\n@CODE_OPT[explain=detail, bench=compare]\n```"
+    },
+    {
+      "id": "module-c-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Diagramm Erstellung",
+      "beschreibung": "Erstellung von Diagrammen und Visualisierungen",
+      "modul": "Modul C: Visualisierung",
+      "typ": "Dokumentation",
+      "tags": ["Core", "Visualisierung"],
+      "created_time": "2024-01-05T00:00:00.000Z",
+      "last_edited_time": "2024-01-19T00:00:00.000Z",
+      "content": "# Diagramm Erstellung\n\n## Unterstützte Typen\n- Line Charts\n- Bar Charts\n- Scatter Plots\n- Heatmaps\n\n## Verwendung\n```\n@VIZ_CHART[type=line, data=series1, title='Performance']\n```"
+    },
+    {
+      "id": "module-d-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Prompt Engineering",
+      "beschreibung": "Optimierung und Strukturierung von KI-Prompts",
+      "modul": "Modul D: KI-Steuerung",
+      "typ": "Dokumentation",
+      "tags": ["Core", "AI"],
+      "created_time": "2024-01-06T00:00:00.000Z",
+      "last_edited_time": "2024-01-20T00:00:00.000Z",
+      "content": "# Prompt Engineering\n\n## Best Practices\n1. Klare Anweisungen\n2. Strukturierte Eingaben\n3. Kontext bereitstellen\n\n## Verwendung\n```\n@AI_PROMPT[role=expert, context=tech, format=structured]\n```"
+    },
+    {
+      "id": "module-e-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Feature Engineering",
+      "beschreibung": "Automatische Feature-Extraktion und -Transformation für ML",
+      "modul": "Modul E: Datenanalyse & ML",
+      "typ": "Beispiel",
+      "tags": ["Erweitert", "ML"],
+      "created_time": "2024-01-07T00:00:00.000Z",
+      "last_edited_time": "2024-01-21T00:00:00.000Z",
+      "content": "# Feature Engineering\n\n## Automatische Transformationen\n\n```\n@ML_FEATURE_ENG[auto, normalize=true, encode_categorical=onehot]\n```\n\n## Manuelle Feature-Auswahl\n```\n@ML_FEATURE_SELECT[method=correlation, threshold=0.8]\n```"
+    },
+    {
+      "id": "module-f-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "API Dokumentation",
+      "beschreibung": "Automatische Generierung von API-Dokumentation",
+      "modul": "Modul F: Dokumentation",
+      "typ": "Dokumentation",
+      "tags": ["Core", "Docs"],
+      "created_time": "2024-01-08T00:00:00.000Z",
+      "last_edited_time": "2024-01-22T00:00:00.000Z",
+      "content": "# API Dokumentation\n\n## Generierung aus Code\n```\n@DOC_API[source=code, format=openapi, include_examples=true]\n```\n\n## Unterstützte Formate\n- OpenAPI/Swagger\n- Markdown\n- HTML"
+    },
+    {
+      "id": "module-g-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Test Generation",
+      "beschreibung": "Automatische Generierung von Unit- und Integration-Tests",
+      "modul": "Modul G: Testing & QA",
+      "typ": "Beispiel",
+      "tags": ["Core", "Testing"],
+      "created_time": "2024-01-09T00:00:00.000Z",
+      "last_edited_time": "2024-01-23T00:00:00.000Z",
+      "content": "# Test Generation\n\n## Unit Tests\n```\n@TEST_GEN[type=unit, coverage=90, framework=pytest]\n```\n\n## Integration Tests\n```\n@TEST_GEN[type=integration, scenarios=critical_paths]\n```"
+    },
+    {
+      "id": "module-h-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Schema Design",
+      "beschreibung": "Design und Optimierung von Datenbankschemas",
+      "modul": "Modul H: Database & Data Modeling",
+      "typ": "Dokumentation",
+      "tags": ["Core", "Database"],
+      "created_time": "2024-01-10T00:00:00.000Z",
+      "last_edited_time": "2024-01-24T00:00:00.000Z",
+      "content": "# Schema Design\n\n## Normalisierung\n```\n@DB_SCHEMA[normalize=3NF, optimize_indexes=true]\n```\n\n## Migrations\n```\n@DB_MIGRATE[from=v1, to=v2, strategy=incremental]\n```"
+    },
+    {
+      "id": "module-i-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "Security Audit",
+      "beschreibung": "Automatische Sicherheitsprüfung von Code und Konfigurationen",
+      "modul": "Modul I: Security & Compliance",
+      "typ": "Dokumentation",
+      "tags": ["Core", "Security"],
+      "created_time": "2024-01-11T00:00:00.000Z",
+      "last_edited_time": "2024-01-25T00:00:00.000Z",
+      "content": "# Security Audit\n\n## Vulnerability Scanning\n```\n@SEC_AUDIT[type=full, severity=all, report=detailed]\n```\n\n## Compliance Check\n```\n@SEC_COMPLIANCE[standard=GDPR, generate_report=true]\n```"
+    },
+    {
+      "id": "module-j-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "CI/CD Pipeline",
+      "beschreibung": "Automatisierung von Build, Test und Deployment",
+      "modul": "Modul J: DevOps & Deployment",
+      "typ": "Beispiel",
+      "tags": ["Core", "DevOps"],
+      "created_time": "2024-01-12T00:00:00.000Z",
+      "last_edited_time": "2024-01-26T00:00:00.000Z",
+      "content": "# CI/CD Pipeline\n\n## GitHub Actions\n```\n@DEVOPS_CI[platform=github, stages='build,test,deploy']\n```\n\n## Docker Deployment\n```\n@DEVOPS_DEPLOY[container=docker, registry=ghcr.io]\n```"
+    },
+    {
+      "id": "module-k-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "React Component",
+      "beschreibung": "Generierung von React-Komponenten mit Best Practices",
+      "modul": "Modul K: Frontend & UI",
+      "typ": "Beispiel",
+      "tags": ["Core", "Frontend"],
+      "created_time": "2024-01-13T00:00:00.000Z",
+      "last_edited_time": "2024-01-27T00:00:00.000Z",
+      "content": "# React Component\n\n## Funktionale Komponente\n```\n@UI_COMPONENT[framework=react, type=functional, state=hooks]\n```\n\n## Mit TypeScript\n```\n@UI_COMPONENT[framework=react, typescript=true, props_interface=true]\n```"
+    },
+    {
+      "id": "module-l-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "ETL Pipeline",
+      "beschreibung": "Extract, Transform, Load Pipelines für Datenverarbeitung",
+      "modul": "Modul L: Data Pipelines & ETL",
+      "typ": "Dokumentation",
+      "tags": ["Core", "ETL"],
+      "created_time": "2024-01-14T00:00:00.000Z",
+      "last_edited_time": "2024-01-28T00:00:00.000Z",
+      "content": "# ETL Pipeline\n\n## Batch Processing\n```\n@ETL_PIPELINE[source=csv, transform=clean, destination=db]\n```\n\n## Real-time Streaming\n```\n@ETL_STREAM[source=kafka, window=5m, aggregation=sum]\n```"
+    },
+    {
+      "id": "module-m-001",
+      "url": "https://github.com/ProfRandom92/comptext-codex",
+      "titel": "MCP Tool Integration",
+      "beschreibung": "Integration mit Model Context Protocol für Multi-Agent Systeme",
+      "modul": "Modul M: MCP Integration",
+      "typ": "Dokumentation",
+      "tags": ["Core", "MCP"],
+      "created_time": "2024-01-15T00:00:00.000Z",
+      "last_edited_time": "2024-01-29T00:00:00.000Z",
+      "content": "# MCP Tool Integration\n\n## Tool Definition\n```\n@MCP_TOOL[name=codex_search, input_schema=json, output=structured]\n```\n\n## Multi-Agent Communication\n```\n@MCP_AGENT[role=analyzer, communicate=coordinator]\n```"
+    }
+  ]
+}
