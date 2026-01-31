@@ -6,8 +6,8 @@
       "cwd": "/absolute/path/to/comptext-mcp-server",
       "env": {
         "PYTHONPATH": "/absolute/path/to/comptext-mcp-server/src",
-        "NOTION_API_TOKEN": "your_notion_token_here",
-        "COMPTEXT_DATABASE_ID": "0e038c9b52c5466694dbac288280dd93",
+        "COMPTEXT_DATA_SOURCE": "local",
+        "COMPTEXT_CODEX_PATH": "data/codex.json",
         "LOG_LEVEL": "INFO"
       }
     }
