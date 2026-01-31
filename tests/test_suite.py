@@ -5,6 +5,10 @@ import sys
 import os
 from unittest.mock import patch
 
+# Set dummy environment variables for testing if not already set
+os.environ.setdefault("NOTION_API_TOKEN", "dummy_token_for_testing")
+os.environ.setdefault("COMPTEXT_DATABASE_ID", "0e038c9b52c5466694dbac288280dd93")
+
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 

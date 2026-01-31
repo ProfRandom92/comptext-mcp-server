@@ -162,6 +162,20 @@ async def list_tools() -> List[Tool]:
                 "required": ["owner", "repo", "new_default"],
             },
         ),
+        Tool(
+            name="nl_to_comptext",
+            description="Konvertiere Natural Language in kanonisches CompText (Bundle-first)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "text": {"type": "string", "description": "Natural language request"},
+                    "audience": {"type": "string", "enum": ["dev", "audit", "exec"], "default": "dev"},
+                    "mode": {"type": "string", "enum": ["bundle_only", "allow_inline_fallback"], "default": "bundle_only"},
+                    "return": {"type": "string", "enum": ["dsl_only", "dsl_plus_confidence", "dsl_plus_explanation"], "default": "dsl_plus_confidence"},
+                },
+                "required": ["text"],
+            },
+        )
     ]
 
 
@@ -416,6 +430,16 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             output += "\n"
             
             return [TextContent(type="text", text=output)]
+
+        elif name == "nl_to_comptext":
+            from .compiler.nl_to_comptext import compile_nl_to_comptext
+            result = compile_nl_to_comptext(
+                text=arguments.get("text", ""),
+                audience=arguments.get("audience", "dev"),
+                mode=arguments.get("mode", "bundle_only"),
+                return_mode=arguments.get("return", "dsl_plus_confidence"),
+            )
+            return [TextContent(type="text", text=result)]
 
         else:
             raise ValueError(f"Unknown tool: {name}")
