@@ -28,6 +28,13 @@ CACHE_TTL = 3600  # 1 hour in seconds
 # Notion API Configuration
 DEFAULT_DATABASE_ID = "0e038c9b52c5466694dbac288280dd93"
 
+# Local Codex Configuration
+DEFAULT_DATA_PATH = "data/codex.json"
+
+# Data Source Configuration
+# Valid values: "notion" or "local"
+DATA_SOURCE = "local"  # Default to local JSON file
+
 # Retry Configuration
 MAX_RETRIES = 3
 RETRY_DELAY = 1  # seconds

@@ -2,20 +2,42 @@
 
 import asyncio
 import logging
+import os
 from typing import Any, Sequence, List
 from mcp.server import Server
 from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 from dotenv import load_dotenv
 
-from .notion_client import (
-    get_all_modules,
-    get_module_by_name,
-    get_page_content,
-    search_codex,
-    get_modules_by_tag,
-    get_modules_by_type,
-    NotionClientError,
-)
+# Load environment first
+load_dotenv()
+
+# Determine data source
+DATA_SOURCE = os.getenv("COMPTEXT_DATA_SOURCE", "local").lower()
+
+# Import appropriate client based on configuration
+if DATA_SOURCE == "notion":
+    from .notion_client import (
+        get_all_modules,
+        get_module_by_name,
+        get_page_content,
+        search_codex,
+        get_modules_by_tag,
+        get_modules_by_type,
+        NotionClientError as CodexClientError,
+    )
+    logger_msg = "Using Notion API as data source"
+else:
+    from .local_codex_client import (
+        get_all_modules,
+        get_module_by_name,
+        get_page_content,
+        search_codex,
+        get_modules_by_tag,
+        get_modules_by_type,
+        LocalCodexClientError as CodexClientError,
+    )
+    logger_msg = "Using local JSON file as data source"
+
 from .github_client import (
     audit_repository,
     auto_merge_prs,
@@ -25,12 +47,10 @@ from .github_client import (
 from .constants import MODULE_MAP, DEFAULT_MAX_RESULTS
 from .utils import validate_page_id, validate_query_string, validate_github_repo_name, validate_branch_name
 
-# Load environment
-load_dotenv()
-
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.info(logger_msg)
 
 # Constants
 MAX_BRANCHES_TO_DISPLAY = 10
@@ -423,8 +443,8 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
     except GitHubClientError as e:
         logger.error(f"GitHub client error: {e}")
         return [TextContent(type="text", text=f"GitHub Error: {str(e)}")]
-    except NotionClientError as e:
-        logger.error(f"Notion client error: {e}")
+    except CodexClientError as e:
+        logger.error(f"Codex client error: {e}")
         return [TextContent(type="text", text=f"Error: {str(e)}")]
     except ValueError as e:
         logger.error(f"Validation error: {e}")
