@@ -133,19 +133,21 @@ def get_page_content(page_id: str) -> str:
         Markdown-formatted module content
         
     Raises:
-        ValueError: If page ID is invalid
+        ValueError: If page ID is empty
         LocalCodexClientError: If module not found
     """
-    validated_id = validate_page_id(page_id)
+    if not page_id:
+        raise ValueError("Page ID cannot be empty")
+    
     codex = _get_cached_codex()
     modules = codex.get("modules", [])
     
     for module in modules:
-        if module.get("id") == validated_id:
+        if module.get("id") == page_id:
             content = module.get("content", "")
             return sanitize_text_output(content)
     
-    raise LocalCodexClientError(f"Module not found: {validated_id}")
+    raise LocalCodexClientError(f"Module not found: {page_id}")
 
 
 def search_codex(query: str, max_results: int = 20) -> List[Dict[str, Any]]:
@@ -193,17 +195,19 @@ def get_page_by_id(page_id: str) -> Dict[str, Any]:
         Parsed module information dictionary
         
     Raises:
-        ValueError: If page ID format is invalid
+        ValueError: If page ID is empty
         LocalCodexClientError: If module not found
     """
-    validated_id = validate_page_id(page_id)
+    if not page_id:
+        raise ValueError("Page ID cannot be empty")
+    
     all_modules = get_all_modules()
     
     for module in all_modules:
-        if module.get("id") == validated_id:
+        if module.get("id") == page_id:
             return module
     
-    raise LocalCodexClientError(f"Module not found: {validated_id}")
+    raise LocalCodexClientError(f"Module not found: {page_id}")
 
 
 def get_modules_by_tag(tag: str) -> List[Dict[str, Any]]:

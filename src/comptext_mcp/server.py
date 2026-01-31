@@ -235,7 +235,10 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             return [TextContent(type="text", text=output)]
 
         elif name == "get_command":
-            page_id = validate_page_id(arguments.get("page_id"))
+            page_id = arguments.get("page_id")
+            # For local codex, don't validate UUID format as IDs are custom
+            if DATA_SOURCE != "local":
+                page_id = validate_page_id(page_id)
             content = get_page_content(page_id)
 
             return [TextContent(type="text", text=content)]
