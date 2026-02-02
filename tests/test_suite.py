@@ -167,8 +167,11 @@ class TestNotionClientWithMock:
         assert isinstance(results, list)
 
 
-# Only run integration tests if Notion token is available
-@pytest.mark.skipif(not os.getenv("NOTION_API_TOKEN"), reason="NOTION_API_TOKEN not set - skipping integration tests")
+# Only run integration tests if Notion token is available and not a dummy token
+@pytest.mark.skipif(
+    not os.getenv("NOTION_API_TOKEN") or os.getenv("NOTION_API_TOKEN") == "dummy_token_for_testing",
+    reason="Real NOTION_API_TOKEN not set - skipping integration tests"
+)
 class TestNotionClientIntegration:
     """Integration tests with real Notion API (requires credentials)"""
 

@@ -4,6 +4,7 @@ import pytest
 from comptext_mcp.utils import (
     validate_github_repo_name,
     validate_branch_name,
+    validate_page_id,
     truncate_text,
 )
 
