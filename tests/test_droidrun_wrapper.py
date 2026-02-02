@@ -327,13 +327,13 @@ class TestDroidRunWrapper:
 
     def test_parse_ui_xml(self, wrapper):
         """Test UI XML parsing."""
-        xml = '''<?xml version="1.0" encoding="UTF-8"?>
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
         <hierarchy>
             <node text="Button" clickable="true" bounds="[0,0][100,50]"
                   class="android.widget.Button" resource-id="com.app:id/btn"/>
             <node text="" content-desc="Icon" bounds="[100,0][150,50]"
                   clickable="true" class="android.widget.ImageView"/>
-        </hierarchy>'''
+        </hierarchy>"""
 
         elements = wrapper._parse_ui_xml(xml)
 

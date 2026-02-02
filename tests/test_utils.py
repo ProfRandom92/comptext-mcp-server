@@ -63,6 +63,7 @@ def test_validate_page_id_empty_and_uuid():
     with pytest.raises(ValueError, match="cannot be empty"):
         validate_page_id("")
     import uuid
+
     uid = uuid.uuid4()
     normalized = validate_page_id(uid.hex)
     assert normalized == uid.hex

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class UINode:
     """Represents a single UI node from the hierarchy."""
+
     index: int
     text: str = ""
     resource_id: str = ""
@@ -126,7 +127,7 @@ class UITreeParser:
     """
 
     # Bounds pattern: [x1,y1][x2,y2]
-    BOUNDS_PATTERN = re.compile(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]')
+    BOUNDS_PATTERN = re.compile(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]")
 
     def __init__(self, min_area: int = 100, max_elements: int = 50):
         """
@@ -166,10 +167,10 @@ class UITreeParser:
         sorted_nodes = self._sort_by_relevance(filtered)
 
         # Re-index after sorting
-        for i, node in enumerate(sorted_nodes[:self.max_elements]):
+        for i, node in enumerate(sorted_nodes[: self.max_elements]):
             node.index = i
 
-        return sorted_nodes[:self.max_elements]
+        return sorted_nodes[: self.max_elements]
 
     def _parse_node(self, element: ET.Element, nodes: list[UINode], depth: int = 0):
         """Recursively parse XML element into UINode."""
@@ -240,6 +241,7 @@ class UITreeParser:
 
     def _sort_by_relevance(self, nodes: list[UINode]) -> list[UINode]:
         """Sort nodes by relevance for agent interaction."""
+
         def relevance_score(node: UINode) -> tuple:
             # Higher score = more relevant
             score = 0
@@ -359,14 +361,14 @@ def parse_ui_dump(xml_content: str, comptext: bool = True) -> tuple[list[UINode]
 
 
 # Example XML for testing
-EXAMPLE_UI_XML = '''<?xml version="1.0" encoding="UTF-8"?>
+EXAMPLE_UI_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <hierarchy rotation="0">
   <node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.android.launcher3" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,1920]">
     <node index="0" text="Chrome" resource-id="com.android.launcher3:id/icon" class="android.widget.TextView" package="com.android.launcher3" content-desc="Chrome" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="true" password="false" selected="false" bounds="[120,800][280,1000]" />
     <node index="1" text="Settings" resource-id="com.android.launcher3:id/icon" class="android.widget.TextView" package="com.android.launcher3" content-desc="Settings" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="true" password="false" selected="false" bounds="[400,800][560,1000]" />
     <node index="2" text="Messages" resource-id="com.android.launcher3:id/icon" class="android.widget.TextView" package="com.android.launcher3" content-desc="Messages" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="true" password="false" selected="false" bounds="[680,800][840,1000]" />
   </node>
-</hierarchy>'''
+</hierarchy>"""
 
 
 if __name__ == "__main__":

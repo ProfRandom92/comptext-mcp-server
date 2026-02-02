@@ -19,6 +19,7 @@ try:
         MobileAgentWebSocketServer,
         WEBSOCKETS_AVAILABLE,
     )
+
     HAS_WEBSOCKETS = WEBSOCKETS_AVAILABLE
 except ImportError:
     HAS_WEBSOCKETS = False
@@ -98,6 +99,7 @@ class TestWebSocketMobileAgent:
     def mock_config(self):
         """Create mock configuration."""
         from comptext_mcp.mobile_agent.config import MobileAgentConfig
+
         config = MobileAgentConfig()
         config.ollama.api_key = "test-key"
         return config
@@ -137,6 +139,7 @@ class TestMobileAgentWebSocketServer:
     def mock_config(self):
         """Create mock configuration."""
         from comptext_mcp.mobile_agent.config import MobileAgentConfig
+
         config = MobileAgentConfig()
         config.ollama.api_key = "test-key"
         return config
@@ -197,6 +200,7 @@ class TestMessageHandling:
     def mock_config(self):
         """Create mock configuration."""
         from comptext_mcp.mobile_agent.config import MobileAgentConfig
+
         config = MobileAgentConfig()
         config.ollama.api_key = "test-key"
         return config

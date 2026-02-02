@@ -12,6 +12,7 @@ from enum import Enum
 
 class OllamaModel(str, Enum):
     """Available Ollama Cloud models."""
+
     QWEN3_CODER = "qwen3-coder:480b"  # Primary: agentic tasks, tool-use
     DEEPSEEK_V3 = "deepseek-v3.2:671b"  # Backup: complex reasoning
     NEMOTRON_NANO = "nemotron-3-nano:30b"  # Local: fast UI parsing
@@ -19,6 +20,7 @@ class OllamaModel(str, Enum):
 
 class AgentMode(str, Enum):
     """Agent execution modes."""
+
     CLOUD = "cloud"  # Use Ollama Cloud
     LOCAL = "local"  # Use local Ollama instance
     HYBRID = "hybrid"  # Fast tasks local, complex tasks cloud
@@ -27,6 +29,7 @@ class AgentMode(str, Enum):
 @dataclass
 class OllamaConfig:
     """Ollama API configuration."""
+
     api_base: str = field(default_factory=lambda: os.getenv("OLLAMA_API_BASE", "https://api.ollama.ai"))
     api_key: Optional[str] = field(default_factory=lambda: os.getenv("OLLAMA_API_KEY"))
     model: OllamaModel = OllamaModel.QWEN3_CODER
@@ -40,6 +43,7 @@ class OllamaConfig:
 @dataclass
 class ADBConfig:
     """Android Debug Bridge configuration."""
+
     adb_path: str = field(default_factory=lambda: os.getenv("ADB_PATH", "adb"))
     device_serial: Optional[str] = field(default_factory=lambda: os.getenv("ANDROID_SERIAL"))
     screenshot_dir: str = field(default_factory=lambda: os.getenv("SCREENSHOT_DIR", "/tmp/mobile_agent"))
@@ -49,6 +53,7 @@ class ADBConfig:
 @dataclass
 class AgentConfig:
     """Agent behavior configuration."""
+
     max_steps: int = 10
     retry_attempts: int = 3
     step_delay: float = 0.5  # Delay between steps in seconds
@@ -61,6 +66,7 @@ class AgentConfig:
 @dataclass
 class MobileAgentConfig:
     """Complete mobile agent configuration."""
+
     ollama: OllamaConfig = field(default_factory=OllamaConfig)
     adb: ADBConfig = field(default_factory=ADBConfig)
     agent: AgentConfig = field(default_factory=AgentConfig)

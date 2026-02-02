@@ -106,8 +106,8 @@ class TestOllamaCloudClient:
 
     def test_client_has_metrics(self, client):
         """Test client has metrics tracking."""
-        assert hasattr(client, 'metrics')
-        assert hasattr(client, 'reset_metrics')
+        assert hasattr(client, "metrics")
+        assert hasattr(client, "reset_metrics")
 
     @pytest.mark.asyncio
     async def test_context_manager(self, config):

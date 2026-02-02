@@ -170,7 +170,7 @@ class TestNotionClientWithMock:
 # Only run integration tests if Notion token is available and not a dummy token
 @pytest.mark.skipif(
     not os.getenv("NOTION_API_TOKEN") or os.getenv("NOTION_API_TOKEN") == "dummy_token_for_testing",
-    reason="Real NOTION_API_TOKEN not set - skipping integration tests"
+    reason="Real NOTION_API_TOKEN not set - skipping integration tests",
 )
 class TestNotionClientIntegration:
     """Integration tests with real Notion API (requires credentials)"""
@@ -244,7 +244,7 @@ class TestLocalCodexClient:
     def test_local_codex_load(self):
         """Test loading modules from local JSON"""
         from comptext_mcp.local_codex_client import get_all_modules
-        
+
         modules = get_all_modules()
         assert len(modules) > 0, "Should load modules from local JSON"
         assert all("titel" in m for m in modules), "All modules should have titel"
@@ -253,7 +253,7 @@ class TestLocalCodexClient:
     def test_local_codex_search(self):
         """Test searching in local codex"""
         from comptext_mcp.local_codex_client import search_codex
-        
+
         results = search_codex("Code")
         assert isinstance(results, list), "Search should return a list"
         assert len(results) > 0, "Should find results for 'Code'"
@@ -261,7 +261,7 @@ class TestLocalCodexClient:
     def test_local_codex_by_module(self):
         """Test filtering by module"""
         from comptext_mcp.local_codex_client import get_module_by_name
-        
+
         results = get_module_by_name("Modul B: Programmierung")
         assert isinstance(results, list), "Should return a list"
         assert all(m["modul"] == "Modul B: Programmierung" for m in results)
@@ -269,7 +269,7 @@ class TestLocalCodexClient:
     def test_local_codex_by_tag(self):
         """Test filtering by tag"""
         from comptext_mcp.local_codex_client import get_modules_by_tag
-        
+
         results = get_modules_by_tag("Core")
         assert isinstance(results, list), "Should return a list"
         assert all("Core" in m["tags"] for m in results)
@@ -277,7 +277,7 @@ class TestLocalCodexClient:
     def test_local_codex_by_type(self):
         """Test filtering by type"""
         from comptext_mcp.local_codex_client import get_modules_by_type
-        
+
         results = get_modules_by_type("Dokumentation")
         assert isinstance(results, list), "Should return a list"
         assert all(m["typ"] == "Dokumentation" for m in results)
@@ -285,7 +285,7 @@ class TestLocalCodexClient:
     def test_local_codex_content(self):
         """Test getting page content"""
         from comptext_mcp.local_codex_client import get_all_modules, get_page_content
-        
+
         modules = get_all_modules()
         if modules:
             page_id = modules[0]["id"]
@@ -296,7 +296,7 @@ class TestLocalCodexClient:
     def test_local_codex_cache_clear(self):
         """Test cache clearing"""
         from comptext_mcp.local_codex_client import clear_cache
-        
+
         # Should not raise an error
         clear_cache()
 

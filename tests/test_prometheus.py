@@ -16,6 +16,7 @@ try:
         with_metrics,
         PROMETHEUS_AVAILABLE,
     )
+
     HAS_PROMETHEUS = PROMETHEUS_AVAILABLE
 except ImportError:
     HAS_PROMETHEUS = False
@@ -30,6 +31,7 @@ class TestPrometheusMetrics:
     def metrics(self):
         """Create metrics instance with fresh registry."""
         from prometheus_client import CollectorRegistry
+
         registry = CollectorRegistry()
         return PrometheusMetrics(registry=registry)
 
@@ -169,6 +171,7 @@ class TestMetricsContext:
     def metrics(self):
         """Create metrics instance."""
         from prometheus_client import CollectorRegistry
+
         registry = CollectorRegistry()
         return PrometheusMetrics(registry=registry)
 
@@ -214,6 +217,7 @@ class TestGetMetrics:
         """Test get_metrics returns an instance."""
         # Reset global state
         import comptext_mcp.mobile_agent.prometheus_metrics as pm
+
         pm._global_metrics = None
 
         metrics = get_metrics()
@@ -224,6 +228,7 @@ class TestGetMetrics:
         """Test get_metrics returns same instance."""
         # Reset global state
         import comptext_mcp.mobile_agent.prometheus_metrics as pm
+
         pm._global_metrics = None
 
         metrics1 = get_metrics()
@@ -240,12 +245,14 @@ class TestWithMetricsDecorator:
     def metrics(self):
         """Create metrics instance."""
         from prometheus_client import CollectorRegistry
+
         registry = CollectorRegistry()
         return PrometheusMetrics(registry=registry)
 
     @pytest.mark.asyncio
     async def test_decorator_success(self, metrics):
         """Test decorator records successful calls."""
+
         @with_metrics(metrics)
         async def successful_task():
             result = MagicMock()
@@ -262,6 +269,7 @@ class TestWithMetricsDecorator:
     @pytest.mark.asyncio
     async def test_decorator_failure(self, metrics):
         """Test decorator records failed calls."""
+
         @with_metrics(metrics)
         async def failing_task():
             raise RuntimeError("Test failure")
@@ -285,6 +293,7 @@ class TestMetricsHistograms:
     def metrics(self):
         """Create metrics instance."""
         from prometheus_client import CollectorRegistry
+
         registry = CollectorRegistry()
         return PrometheusMetrics(registry=registry)
 
@@ -325,6 +334,7 @@ class TestMetricsInfo:
     def metrics(self):
         """Create metrics instance."""
         from prometheus_client import CollectorRegistry
+
         registry = CollectorRegistry()
         return PrometheusMetrics(registry=registry)
 
@@ -342,6 +352,7 @@ class TestTokenReduction:
     def metrics(self):
         """Create metrics instance."""
         from prometheus_client import CollectorRegistry
+
         registry = CollectorRegistry()
         return PrometheusMetrics(registry=registry)
 

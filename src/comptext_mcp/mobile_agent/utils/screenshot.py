@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ScreenshotResult:
     """Result of a screenshot capture."""
+
     success: bool
     path: Optional[str] = None
     base64_data: Optional[str] = None
@@ -98,7 +99,11 @@ class ScreenshotPipeline:
 
             # Take screenshot on device
             proc = await asyncio.create_subprocess_exec(
-                self.adb_path, "shell", "screencap", "-p", device_path,
+                self.adb_path,
+                "shell",
+                "screencap",
+                "-p",
+                device_path,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
@@ -113,7 +118,10 @@ class ScreenshotPipeline:
 
             # Pull screenshot to local
             proc = await asyncio.create_subprocess_exec(
-                self.adb_path, "pull", device_path, str(output_path),
+                self.adb_path,
+                "pull",
+                device_path,
+                str(output_path),
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
@@ -128,7 +136,10 @@ class ScreenshotPipeline:
 
             # Clean up device file
             await asyncio.create_subprocess_exec(
-                self.adb_path, "shell", "rm", device_path,
+                self.adb_path,
+                "shell",
+                "rm",
+                device_path,
                 stdout=asyncio.subprocess.DEVNULL,
                 stderr=asyncio.subprocess.DEVNULL,
             )
@@ -237,6 +248,7 @@ class ScreenshotPipeline:
         """Get image dimensions without loading full image."""
         try:
             from PIL import Image
+
             with Image.open(path) as img:
                 return img.size
         except ImportError:
@@ -326,14 +338,10 @@ class ScreenContextBuilder:
 
         if self.use_comptext:
             context["format"] = "comptext"
-            context["ui_state"] = self._build_comptext_state(
-                ui_elements, package, activity
-            )
+            context["ui_state"] = self._build_comptext_state(ui_elements, package, activity)
         else:
             context["format"] = "verbose"
-            context["ui_state"] = self._build_verbose_state(
-                ui_elements, package, activity
-            )
+            context["ui_state"] = self._build_verbose_state(ui_elements, package, activity)
 
         # Include base64 image if available
         if screenshot and screenshot.base64_data:
@@ -360,7 +368,7 @@ class ScreenContextBuilder:
 
         # Elements (limited for token efficiency)
         for el in elements[:15]:
-            if hasattr(el, 'to_comptext'):
+            if hasattr(el, "to_comptext"):
                 lines.append(el.to_comptext())
             else:
                 # Fallback for dict-like elements
@@ -389,15 +397,15 @@ class ScreenContextBuilder:
         ]
 
         for el in elements[:20]:
-            if hasattr(el, 'to_dict'):
+            if hasattr(el, "to_dict"):
                 d = el.to_dict()
             else:
                 d = el
 
             parts = [f"[{d.get('index', '?')}]"]
-            if d.get('text'):
+            if d.get("text"):
                 parts.append(f"text=\"{d['text']}\"")
-            if d.get('content_desc'):
+            if d.get("content_desc"):
                 parts.append(f"desc=\"{d['content_desc']}\"")
             parts.append(f"clickable={d.get('clickable', False)}")
             parts.append(f"center={d.get('center', (0,0))}")
@@ -433,7 +441,11 @@ async def capture_screen_context(
 
     # Get UI hierarchy
     proc = await asyncio.create_subprocess_exec(
-        adb_path, "shell", "uiautomator", "dump", "/dev/tty",
+        adb_path,
+        "shell",
+        "uiautomator",
+        "dump",
+        "/dev/tty",
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
@@ -445,7 +457,11 @@ async def capture_screen_context(
 
     # Get current package/activity
     proc = await asyncio.create_subprocess_exec(
-        adb_path, "shell", "dumpsys", "window", "windows",
+        adb_path,
+        "shell",
+        "dumpsys",
+        "window",
+        "windows",
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
@@ -457,7 +473,8 @@ async def capture_screen_context(
             # Extract package/activity from line like:
             # mCurrentFocus=Window{... com.android.chrome/org.chromium.chrome.browser.ChromeTabbedActivity}
             import re
-            match = re.search(r'(\S+)/(\S+)\}', line)
+
+            match = re.search(r"(\S+)/(\S+)\}", line)
             if match:
                 package = match.group(1)
                 activity = match.group(2)

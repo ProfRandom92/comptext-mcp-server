@@ -27,12 +27,14 @@ try:
         EventType,
         run_websocket_server,
     )
+
     WEBSOCKET_AVAILABLE = True
 except ImportError:
     WEBSOCKET_AVAILABLE = False
 
 try:
     from .prometheus_metrics import PrometheusMetrics, start_metrics_server
+
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False

@@ -39,12 +39,17 @@ def setup_logging(level: str, verbose: bool = False):
 
 def print_banner():
     """Print CLI banner."""
-    click.echo(click.style("""
+    click.echo(
+        click.style(
+            """
 ╔═══════════════════════════════════════════════════════════╗
 ║           CompText Mobile Agent CLI v2.1.0                ║
 ║       Android Automation via Natural Language             ║
 ╚═══════════════════════════════════════════════════════════╝
-""", fg="cyan"))
+""",
+            fg="cyan",
+        )
+    )
 
 
 def print_result(result: AgentResult, verbose: bool = False):
@@ -116,8 +121,7 @@ def cli(ctx, verbose: bool, debug: bool, config_file: Optional[str]):
 @click.option("--output", "-o", type=click.Path(), help="Save result to JSON file")
 @click.option("--dry-run", is_flag=True, help="Parse task without executing")
 @click.pass_context
-def run(ctx, task: str, steps: int, no_comptext: bool, mode: str, model: Optional[str],
-        output: Optional[str], dry_run: bool):
+def run(ctx, task: str, steps: int, no_comptext: bool, mode: str, model: Optional[str], output: Optional[str], dry_run: bool):
     """
     Execute a natural language task on Android device.
 
@@ -462,17 +466,24 @@ def metrics(ctx, port: int, host: str):
     try:
         from .prometheus_metrics import start_metrics_server, PrometheusMetrics
     except ImportError:
-        click.echo(click.style(
-            "Prometheus support not available. Install with: pip install prometheus-client",
-            fg="red",
-        ))
+        click.echo(
+            click.style(
+                "Prometheus support not available. Install with: pip install prometheus-client",
+                fg="red",
+            )
+        )
         sys.exit(1)
 
-    click.echo(click.style("""
+    click.echo(
+        click.style(
+            """
 ╔═══════════════════════════════════════════════════════════╗
 ║       CompText Mobile Agent Prometheus Metrics            ║
 ╚═══════════════════════════════════════════════════════════╝
-""", fg="cyan"))
+""",
+            fg="cyan",
+        )
+    )
 
     # Initialize metrics
     PrometheusMetrics()
@@ -483,6 +494,7 @@ def metrics(ctx, port: int, host: str):
     try:
         start_metrics_server(port, host)
         import signal
+
         signal.pause()
     except KeyboardInterrupt:
         click.echo("\nMetrics server stopped")
@@ -515,19 +527,26 @@ def serve(ctx, host: str, port: int):
     try:
         from .websocket_server import run_websocket_server
     except ImportError:
-        click.echo(click.style(
-            "WebSocket support not available. Install with: pip install websockets",
-            fg="red",
-        ))
+        click.echo(
+            click.style(
+                "WebSocket support not available. Install with: pip install websockets",
+                fg="red",
+            )
+        )
         sys.exit(1)
 
     config: MobileAgentConfig = ctx.obj["config"]
 
-    click.echo(click.style("""
+    click.echo(
+        click.style(
+            """
 ╔═══════════════════════════════════════════════════════════╗
 ║         CompText Mobile Agent WebSocket Server            ║
 ╚═══════════════════════════════════════════════════════════╝
-""", fg="cyan"))
+""",
+            fg="cyan",
+        )
+    )
     click.echo(f"Starting server on ws://{host}:{port}")
     click.echo("Press Ctrl+C to stop\n")
 

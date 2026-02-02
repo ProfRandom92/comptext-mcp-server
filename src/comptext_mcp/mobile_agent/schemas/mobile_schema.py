@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional
 
-
 # CompText DSL Grammar for Mobile Automation
 MOBILE_DSL_GRAMMAR = """
 # CompText Mobile DSL v1.0
@@ -64,6 +63,7 @@ STATUS := "OK" | "FAIL:" ERROR
 
 class ActionType(str, Enum):
     """Compressed action types."""
+
     TAP = "tap"
     SWIPE = "swipe"
     TYPE = "type"
@@ -76,13 +76,15 @@ class ActionType(str, Enum):
 
 class ElementType(str, Enum):
     """Compressed element types."""
+
     BUTTON = "B"  # Clickable
-    TEXT = "T"    # Text content
-    ELEMENT = "E" # Other
+    TEXT = "T"  # Text content
+    ELEMENT = "E"  # Other
 
 
 class SwipeDirection(str, Enum):
     """Compressed swipe directions."""
+
     UP = "u"
     DOWN = "d"
     LEFT = "l"
@@ -110,6 +112,7 @@ class MobileActionSchema:
 
     Token reduction: ~82%
     """
+
     thought: str  # "t" in DSL
     action: ActionType  # "a" in DSL
     params: dict[str, Any]  # "p" in DSL
@@ -118,22 +121,30 @@ class MobileActionSchema:
     def to_comptext(self) -> str:
         """Convert to CompText DSL format."""
         import json
-        return json.dumps({
-            "t": self.thought[:50],  # Truncate thought
-            "a": self.action.value,
-            "p": self._compress_params(),
-            "c": round(self.confidence, 2),
-        }, separators=(",", ":"))
+
+        return json.dumps(
+            {
+                "t": self.thought[:50],  # Truncate thought
+                "a": self.action.value,
+                "p": self._compress_params(),
+                "c": round(self.confidence, 2),
+            },
+            separators=(",", ":"),
+        )
 
     def to_verbose(self) -> str:
         """Convert to verbose format (for comparison)."""
         import json
-        return json.dumps({
-            "thought": self.thought,
-            "action": self.action.value,
-            "parameters": self.params,
-            "confidence": self.confidence,
-        }, indent=2)
+
+        return json.dumps(
+            {
+                "thought": self.thought,
+                "action": self.action.value,
+                "parameters": self.params,
+                "confidence": self.confidence,
+            },
+            indent=2,
+        )
 
     def _compress_params(self) -> dict[str, Any]:
         """Compress parameter keys."""
@@ -144,10 +155,7 @@ class MobileActionSchema:
             "direction": "d",
             "seconds": "s",
         }
-        return {
-            key_map.get(k, k): v
-            for k, v in self.params.items()
-        }
+        return {key_map.get(k, k): v for k, v in self.params.items()}
 
     @classmethod
     def from_comptext(cls, data: dict[str, Any]) -> "MobileActionSchema":
@@ -159,10 +167,7 @@ class MobileActionSchema:
             "d": "direction",
             "s": "seconds",
         }
-        params = {
-            key_map.get(k, k): v
-            for k, v in data.get("p", {}).items()
-        }
+        params = {key_map.get(k, k): v for k, v in data.get("p", {}).items()}
         return cls(
             thought=data.get("t", ""),
             action=ActionType(data.get("a", "done")),
@@ -200,6 +205,7 @@ class ScreenStateSchema:
 
     Token reduction: ~85%
     """
+
     package: str
     activity: str
     elements: list[dict[str, Any]]
@@ -222,11 +228,15 @@ class ScreenStateSchema:
     def to_verbose(self) -> str:
         """Convert to verbose format (for comparison)."""
         import json
-        return json.dumps({
-            "package": self.package,
-            "activity": self.activity,
-            "elements": self.elements,
-        }, indent=2)
+
+        return json.dumps(
+            {
+                "package": self.package,
+                "activity": self.activity,
+                "elements": self.elements,
+            },
+            indent=2,
+        )
 
 
 @dataclass
@@ -236,6 +246,7 @@ class AgentResponseSchema:
 
     Combines action with result feedback.
     """
+
     action: MobileActionSchema
     result_status: str  # "OK" or "FAIL:reason"
     new_screen: Optional[ScreenStateSchema] = None
