@@ -90,13 +90,19 @@ class TestRunCommand:
     def test_run_with_options(self, runner):
         """Test run with various options."""
         with patch.dict("os.environ", {"OLLAMA_API_KEY": "test-key"}):
-            result = runner.invoke(cli, [
-                "run", "Open Chrome",
-                "--steps", "15",
-                "--mode", "local",
-                "--no-comptext",
-                "--dry-run",
-            ])
+            result = runner.invoke(
+                cli,
+                [
+                    "run",
+                    "Open Chrome",
+                    "--steps",
+                    "15",
+                    "--mode",
+                    "local",
+                    "--no-comptext",
+                    "--dry-run",
+                ],
+            )
             assert result.exit_code == 0
 
 

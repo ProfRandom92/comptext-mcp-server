@@ -50,11 +50,14 @@ class TestConfig:
 
     def test_config_from_env(self):
         """Test configuration from environment variables."""
-        with patch.dict("os.environ", {
-            "AGENT_MODE": "hybrid",
-            "DEBUG": "true",
-            "LOG_LEVEL": "DEBUG",
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "AGENT_MODE": "hybrid",
+                "DEBUG": "true",
+                "LOG_LEVEL": "DEBUG",
+            },
+        ):
             config = MobileAgentConfig.from_env()
 
             assert config.mode == AgentMode.HYBRID
@@ -181,7 +184,7 @@ class TestScreenState:
             activity="MainActivity",
             elements=[
                 UIElement(text="Search", clickable=True, bounds=(0, 0, 100, 50)),
-            ]
+            ],
         )
 
         compact = state.to_compact_dict()
@@ -260,7 +263,7 @@ class TestScreenStateSchema:
                     "center_x": 540,
                     "center_y": 100,
                 }
-            ]
+            ],
         )
 
         comptext = schema.to_comptext()
@@ -282,7 +285,7 @@ class TestScreenStateSchema:
                     "center_y": 200 + i * 20,
                 }
                 for i in range(10)
-            ]
+            ],
         )
 
         verbose = schema.to_verbose()
@@ -415,6 +418,7 @@ class TestDeviceIntegration:
     @pytest.fixture
     async def device(self):
         from comptext_mcp.mobile_agent import DroidRunWrapper
+
         device = DroidRunWrapper()
         await device.connect()
         yield device

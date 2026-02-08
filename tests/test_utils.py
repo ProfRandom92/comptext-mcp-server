@@ -4,6 +4,7 @@ import pytest
 from comptext_mcp.utils import (
     validate_github_repo_name,
     validate_branch_name,
+    validate_page_id,
     truncate_text,
 )
 
@@ -62,6 +63,7 @@ def test_validate_page_id_empty_and_uuid():
     with pytest.raises(ValueError, match="cannot be empty"):
         validate_page_id("")
     import uuid
+
     uid = uuid.uuid4()
     normalized = validate_page_id(uid.hex)
     assert normalized == uid.hex

@@ -13,6 +13,7 @@ from typing import Optional
 @dataclass
 class TaskMetrics:
     """Metrics for a single task execution."""
+
     task_id: str
     task_description: str
     started_at: datetime
@@ -46,6 +47,7 @@ class TaskMetrics:
 @dataclass
 class PerformanceMetrics:
     """Aggregated performance metrics."""
+
     total_tasks: int = 0
     successful_tasks: int = 0
     failed_tasks: int = 0
@@ -148,11 +150,7 @@ class TokenMetricsCollector:
 
         # Calculate token reduction
         if task.baseline_tokens > 0:
-            task.token_reduction_percent = (
-                (task.baseline_tokens - task.comptext_tokens)
-                / task.baseline_tokens
-                * 100
-            )
+            task.token_reduction_percent = (task.baseline_tokens - task.comptext_tokens) / task.baseline_tokens * 100
 
         # Estimate cost
         task.estimated_cost_usd = self._calculate_cost(
@@ -195,9 +193,7 @@ class TokenMetricsCollector:
 
         if metrics.total_baseline_tokens > 0:
             metrics.avg_token_reduction_percent = (
-                (metrics.total_baseline_tokens - metrics.total_comptext_tokens)
-                / metrics.total_baseline_tokens
-                * 100
+                (metrics.total_baseline_tokens - metrics.total_comptext_tokens) / metrics.total_baseline_tokens * 100
             )
 
         return metrics
@@ -252,39 +248,43 @@ class TokenMetricsCollector:
 
         with open(filepath, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow([
-                "task_id",
-                "description",
-                "started_at",
-                "completed_at",
-                "success",
-                "steps",
-                "prompt_tokens",
-                "completion_tokens",
-                "total_tokens",
-                "baseline_tokens",
-                "comptext_tokens",
-                "token_reduction_pct",
-                "duration_ms",
-                "cost_usd",
-                "error",
-            ])
+            writer.writerow(
+                [
+                    "task_id",
+                    "description",
+                    "started_at",
+                    "completed_at",
+                    "success",
+                    "steps",
+                    "prompt_tokens",
+                    "completion_tokens",
+                    "total_tokens",
+                    "baseline_tokens",
+                    "comptext_tokens",
+                    "token_reduction_pct",
+                    "duration_ms",
+                    "cost_usd",
+                    "error",
+                ]
+            )
 
             for task in self.tasks:
-                writer.writerow([
-                    task.task_id,
-                    task.task_description[:50],
-                    task.started_at.isoformat(),
-                    task.completed_at.isoformat() if task.completed_at else "",
-                    task.success,
-                    task.steps_count,
-                    task.prompt_tokens,
-                    task.completion_tokens,
-                    task.total_tokens,
-                    task.baseline_tokens,
-                    task.comptext_tokens,
-                    f"{task.token_reduction_percent:.1f}",
-                    f"{task.total_duration_ms:.0f}",
-                    f"{task.estimated_cost_usd:.4f}",
-                    task.error or "",
-                ])
+                writer.writerow(
+                    [
+                        task.task_id,
+                        task.task_description[:50],
+                        task.started_at.isoformat(),
+                        task.completed_at.isoformat() if task.completed_at else "",
+                        task.success,
+                        task.steps_count,
+                        task.prompt_tokens,
+                        task.completion_tokens,
+                        task.total_tokens,
+                        task.baseline_tokens,
+                        task.comptext_tokens,
+                        f"{task.token_reduction_percent:.1f}",
+                        f"{task.total_duration_ms:.0f}",
+                        f"{task.estimated_cost_usd:.4f}",
+                        task.error or "",
+                    ]
+                )

@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 class AgentState(str, Enum):
     """Agent execution state."""
+
     IDLE = "idle"
     PLANNING = "planning"
     EXECUTING = "executing"
@@ -35,6 +36,7 @@ class AgentState(str, Enum):
 @dataclass
 class AgentStep:
     """Single step in agent execution."""
+
     step_number: int
     action: str
     reasoning: str
@@ -48,6 +50,7 @@ class AgentStep:
 @dataclass
 class AgentResult:
     """Result of agent task execution."""
+
     success: bool
     task: str
     steps: list[AgentStep] = field(default_factory=list)
@@ -220,14 +223,18 @@ Verify after act. Concise."""
                 result.steps.append(step)
 
                 # Update conversation
-                messages.append(ChatMessage(
-                    role="assistant",
-                    content=response.message.content,
-                ))
-                messages.append(ChatMessage(
-                    role="user",
-                    content=self._build_step_feedback(action_result, screen),
-                ))
+                messages.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=response.message.content,
+                    )
+                )
+                messages.append(
+                    ChatMessage(
+                        role="user",
+                        content=self._build_step_feedback(action_result, screen),
+                    )
+                )
 
                 # Handle failure with retry
                 if not action_result.success:
@@ -259,11 +266,7 @@ Verify after act. Concise."""
         screen: ScreenState,
     ) -> list[ChatMessage]:
         """Build initial message list for LLM."""
-        system_prompt = (
-            self.COMPTEXT_SYSTEM_PROMPT
-            if self.config.agent.use_comptext
-            else self.SYSTEM_PROMPT
-        )
+        system_prompt = self.COMPTEXT_SYSTEM_PROMPT if self.config.agent.use_comptext else self.SYSTEM_PROMPT
 
         screen_context = self._format_screen_context(screen)
 
@@ -344,7 +347,7 @@ Verify after act. Concise."""
         # Try to extract JSON from response
         try:
             # Look for JSON object
-            json_match = re.search(r'\{[^{}]*\}', content, re.DOTALL)
+            json_match = re.search(r"\{[^{}]*\}", content, re.DOTALL)
             if json_match:
                 return json.loads(json_match.group())
         except json.JSONDecodeError:

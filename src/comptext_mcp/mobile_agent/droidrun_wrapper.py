@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class ActionType(str, Enum):
     """Available Android actions."""
+
     TAP = "tap"
     SWIPE = "swipe"
     TYPE = "type"
@@ -40,6 +41,7 @@ class ActionType(str, Enum):
 @dataclass
 class UIElement:
     """Represents a UI element from the accessibility tree."""
+
     resource_id: str = ""
     class_name: str = ""
     text: str = ""
@@ -91,6 +93,7 @@ class UIElement:
 @dataclass
 class ScreenState:
     """Current screen state including UI tree and screenshot."""
+
     package: str = ""
     activity: str = ""
     elements: list[UIElement] = field(default_factory=list)
@@ -107,23 +110,14 @@ class ScreenState:
     @property
     def input_fields(self) -> list[UIElement]:
         """Get all input fields."""
-        return [
-            e for e in self.elements
-            if "EditText" in e.class_name or "TextField" in e.class_name
-        ]
+        return [e for e in self.elements if "EditText" in e.class_name or "TextField" in e.class_name]
 
     def find_by_text(self, text: str, partial: bool = True) -> list[UIElement]:
         """Find elements by text content."""
         text_lower = text.lower()
         if partial:
-            return [
-                e for e in self.elements
-                if text_lower in e.text.lower() or text_lower in e.content_desc.lower()
-            ]
-        return [
-            e for e in self.elements
-            if e.text.lower() == text_lower or e.content_desc.lower() == text_lower
-        ]
+            return [e for e in self.elements if text_lower in e.text.lower() or text_lower in e.content_desc.lower()]
+        return [e for e in self.elements if e.text.lower() == text_lower or e.content_desc.lower() == text_lower]
 
     def find_by_id(self, resource_id: str) -> Optional[UIElement]:
         """Find element by resource ID."""
@@ -152,6 +146,7 @@ class ScreenState:
 @dataclass
 class ActionResult:
     """Result of an action execution."""
+
     success: bool
     action: ActionType
     message: str = ""
@@ -222,13 +217,12 @@ class DroidRunWrapper:
             ScreenState with UI elements and metadata
         """
         import time
+
         state = ScreenState(timestamp=time.time())
 
         # Get current activity
         try:
-            activity_output = await self._adb_shell(
-                "dumpsys activity activities | grep mResumedActivity"
-            )
+            activity_output = await self._adb_shell("dumpsys activity activities | grep mResumedActivity")
             if activity_output:
                 # Parse: mResumedActivity: ActivityRecord{... com.package/.Activity ...}
                 parts = activity_output.split()

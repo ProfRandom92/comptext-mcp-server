@@ -21,6 +21,7 @@ from weakref import WeakSet
 try:
     import websockets
     from websockets.server import WebSocketServerProtocol, serve
+
     WEBSOCKETS_AVAILABLE = True
 except ImportError:
     WEBSOCKETS_AVAILABLE = False
@@ -34,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 class EventType(str, Enum):
     """WebSocket event types."""
+
     # Connection events
     CONNECTED = "connected"
     DISCONNECTED = "disconnected"
@@ -61,6 +63,7 @@ class EventType(str, Enum):
 @dataclass
 class WebSocketEvent:
     """WebSocket event payload."""
+
     type: EventType
     timestamp: float = field(default_factory=time.time)
     task_id: Optional[str] = None
@@ -68,12 +71,14 @@ class WebSocketEvent:
 
     def to_json(self) -> str:
         """Convert to JSON string."""
-        return json.dumps({
-            "type": self.type.value,
-            "timestamp": self.timestamp,
-            "task_id": self.task_id,
-            "data": self.data,
-        })
+        return json.dumps(
+            {
+                "type": self.type.value,
+                "timestamp": self.timestamp,
+                "task_id": self.task_id,
+                "data": self.data,
+            }
+        )
 
 
 class WebSocketMobileAgent(MobileAgent):
@@ -109,14 +114,18 @@ class WebSocketMobileAgent(MobileAgent):
     async def execute(self, task: str) -> AgentResult:
         """Execute task with WebSocket updates."""
         import uuid
+
         self._task_id = str(uuid.uuid4())[:8]
         self._step_count = 0
 
-        self._emit(EventType.TASK_STARTED, {
-            "task": task,
-            "max_steps": self.config.agent.max_steps,
-            "use_comptext": self.config.agent.use_comptext,
-        })
+        self._emit(
+            EventType.TASK_STARTED,
+            {
+                "task": task,
+                "max_steps": self.config.agent.max_steps,
+                "use_comptext": self.config.agent.use_comptext,
+            },
+        )
 
         # Override state transitions
         original_state = self._state
@@ -125,18 +134,24 @@ class WebSocketMobileAgent(MobileAgent):
             result = await self._execute_with_events(task)
 
             if result.success:
-                self._emit(EventType.TASK_COMPLETED, {
-                    "task": task,
-                    "steps": result.step_count,
-                    "tokens": result.total_tokens,
-                    "duration_ms": result.total_duration_ms,
-                })
+                self._emit(
+                    EventType.TASK_COMPLETED,
+                    {
+                        "task": task,
+                        "steps": result.step_count,
+                        "tokens": result.total_tokens,
+                        "duration_ms": result.total_duration_ms,
+                    },
+                )
             else:
-                self._emit(EventType.TASK_FAILED, {
-                    "task": task,
-                    "error": result.error,
-                    "steps": result.step_count,
-                })
+                self._emit(
+                    EventType.TASK_FAILED,
+                    {
+                        "task": task,
+                        "error": result.error,
+                        "steps": result.step_count,
+                    },
+                )
 
             return result
 
@@ -160,11 +175,14 @@ class WebSocketMobileAgent(MobileAgent):
             screen = await self.device.get_screen_state()
             self._add_to_context(screen)
 
-            self._emit(EventType.SCREEN_UPDATED, {
-                "package": screen.package,
-                "activity": screen.activity,
-                "element_count": len(screen.elements),
-            })
+            self._emit(
+                EventType.SCREEN_UPDATED,
+                {
+                    "package": screen.package,
+                    "activity": screen.activity,
+                    "element_count": len(screen.elements),
+                },
+            )
 
             messages = self._build_initial_messages(task, screen)
 
@@ -173,10 +191,13 @@ class WebSocketMobileAgent(MobileAgent):
                 step_start = time.time()
 
                 # Emit step started
-                self._emit(EventType.STEP_STARTED, {
-                    "step": step_num + 1,
-                    "max_steps": self.config.agent.max_steps,
-                })
+                self._emit(
+                    EventType.STEP_STARTED,
+                    {
+                        "step": step_num + 1,
+                        "max_steps": self.config.agent.max_steps,
+                    },
+                )
 
                 self._state = AgentState.PLANNING
                 self._emit(EventType.STATE_CHANGED, {"state": self._state.value})
@@ -185,10 +206,13 @@ class WebSocketMobileAgent(MobileAgent):
                 response = await self.ollama.chat(messages)
                 result.total_tokens += response.total_tokens
 
-                self._emit(EventType.TOKENS_USED, {
-                    "step_tokens": response.total_tokens,
-                    "total_tokens": result.total_tokens,
-                })
+                self._emit(
+                    EventType.TOKENS_USED,
+                    {
+                        "step_tokens": response.total_tokens,
+                        "total_tokens": result.total_tokens,
+                    },
+                )
 
                 # Parse action
                 action_data = self._parse_action(response.message.content)
@@ -224,12 +248,15 @@ class WebSocketMobileAgent(MobileAgent):
                 action_result = await self._execute_action(action_data, screen)
                 step.result = action_result
 
-                self._emit(EventType.ACTION_EXECUTED, {
-                    "action": action_data.get("action"),
-                    "success": action_result.success,
-                    "message": action_result.message,
-                    "error": action_result.error,
-                })
+                self._emit(
+                    EventType.ACTION_EXECUTED,
+                    {
+                        "action": action_data.get("action"),
+                        "success": action_result.success,
+                        "message": action_result.message,
+                        "error": action_result.error,
+                    },
+                )
 
                 # Verify and get new screen state
                 self._state = AgentState.VERIFYING
@@ -240,40 +267,53 @@ class WebSocketMobileAgent(MobileAgent):
                 step.screen_after = screen
                 self._add_to_context(screen)
 
-                self._emit(EventType.SCREEN_UPDATED, {
-                    "package": screen.package,
-                    "activity": screen.activity,
-                    "element_count": len(screen.elements),
-                })
+                self._emit(
+                    EventType.SCREEN_UPDATED,
+                    {
+                        "package": screen.package,
+                        "activity": screen.activity,
+                        "element_count": len(screen.elements),
+                    },
+                )
 
                 step.duration_ms = (time.time() - step_start) * 1000
                 result.steps.append(step)
 
                 # Emit step completed
-                self._emit(EventType.STEP_COMPLETED, {
-                    "step": step_num + 1,
-                    "action": step.action,
-                    "success": action_result.success,
-                    "duration_ms": step.duration_ms,
-                })
+                self._emit(
+                    EventType.STEP_COMPLETED,
+                    {
+                        "step": step_num + 1,
+                        "action": step.action,
+                        "success": action_result.success,
+                        "duration_ms": step.duration_ms,
+                    },
+                )
 
                 # Progress update
                 progress = (step_num + 1) / self.config.agent.max_steps * 100
-                self._emit(EventType.PROGRESS_UPDATE, {
-                    "progress": progress,
-                    "step": step_num + 1,
-                    "max_steps": self.config.agent.max_steps,
-                })
+                self._emit(
+                    EventType.PROGRESS_UPDATE,
+                    {
+                        "progress": progress,
+                        "step": step_num + 1,
+                        "max_steps": self.config.agent.max_steps,
+                    },
+                )
 
                 # Update conversation
-                messages.append(ChatMessage(
-                    role="assistant",
-                    content=response.message.content,
-                ))
-                messages.append(ChatMessage(
-                    role="user",
-                    content=self._build_step_feedback(action_result, screen),
-                ))
+                messages.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=response.message.content,
+                    )
+                )
+                messages.append(
+                    ChatMessage(
+                        role="user",
+                        content=self._build_step_feedback(action_result, screen),
+                    )
+                )
 
                 # Handle failure with retry
                 if not action_result.success:
@@ -319,10 +359,7 @@ class MobileAgentWebSocketServer:
         config: Optional[MobileAgentConfig] = None,
     ):
         if not WEBSOCKETS_AVAILABLE:
-            raise ImportError(
-                "websockets package not installed. "
-                "Install with: pip install websockets"
-            )
+            raise ImportError("websockets package not installed. " "Install with: pip install websockets")
 
         self.host = host
         self.port = port
@@ -373,14 +410,17 @@ class MobileAgentWebSocketServer:
         logger.info(f"Client {client_id} connected")
 
         # Send welcome message
-        await self._send_to_client(websocket, WebSocketEvent(
-            type=EventType.CONNECTED,
-            data={
-                "message": "Connected to CompText Mobile Agent",
-                "version": "2.1.0",
-                "client_id": client_id,
-            },
-        ))
+        await self._send_to_client(
+            websocket,
+            WebSocketEvent(
+                type=EventType.CONNECTED,
+                data={
+                    "message": "Connected to CompText Mobile Agent",
+                    "version": "2.1.0",
+                    "client_id": client_id,
+                },
+            ),
+        )
 
         try:
             async for message in websocket:
@@ -406,10 +446,12 @@ class MobileAgentWebSocketServer:
             elif command == "stop":
                 if self._current_task and not self._current_task.done():
                     self._current_task.cancel()
-                    await self._broadcast(WebSocketEvent(
-                        type=EventType.TASK_FAILED,
-                        data={"error": "Task cancelled by user"},
-                    ))
+                    await self._broadcast(
+                        WebSocketEvent(
+                            type=EventType.TASK_FAILED,
+                            data={"error": "Task cancelled by user"},
+                        )
+                    )
 
             elif command == "screenshot":
                 await self._capture_screenshot()
@@ -431,10 +473,12 @@ class MobileAgentWebSocketServer:
     async def _run_task(self, task: str):
         """Run a task with the mobile agent."""
         if self._current_task and not self._current_task.done():
-            await self._broadcast(WebSocketEvent(
-                type=EventType.ERROR,
-                data={"error": "Another task is already running"},
-            ))
+            await self._broadcast(
+                WebSocketEvent(
+                    type=EventType.ERROR,
+                    data={"error": "Another task is already running"},
+                )
+            )
             return
 
         async def execute():
@@ -443,10 +487,12 @@ class MobileAgentWebSocketServer:
                 broadcast_callback=lambda e: asyncio.create_task(self._broadcast(e)),
             ) as agent:
                 if not await agent.initialize():
-                    await self._broadcast(WebSocketEvent(
-                        type=EventType.ERROR,
-                        data={"error": "Failed to initialize agent"},
-                    ))
+                    await self._broadcast(
+                        WebSocketEvent(
+                            type=EventType.ERROR,
+                            data={"error": "Failed to initialize agent"},
+                        )
+                    )
                     return
                 await agent.execute(task)
 
@@ -459,10 +505,12 @@ class MobileAgentWebSocketServer:
         device = DroidRunWrapper(self.config.adb)
         if await device.connect():
             path = await device.screenshot()
-            await self._broadcast(WebSocketEvent(
-                type=EventType.SCREEN_UPDATED,
-                data={"screenshot_path": path},
-            ))
+            await self._broadcast(
+                WebSocketEvent(
+                    type=EventType.SCREEN_UPDATED,
+                    data={"screenshot_path": path},
+                )
+            )
 
     async def _send_status(self, websocket: WebSocketServerProtocol):
         """Send current status to client."""
@@ -472,10 +520,13 @@ class MobileAgentWebSocketServer:
             "mode": self.config.mode.value,
             "comptext_enabled": self.config.agent.use_comptext,
         }
-        await self._send_to_client(websocket, WebSocketEvent(
-            type=EventType.PROGRESS_UPDATE,
-            data=status,
-        ))
+        await self._send_to_client(
+            websocket,
+            WebSocketEvent(
+                type=EventType.PROGRESS_UPDATE,
+                data=status,
+            ),
+        )
 
     async def _send_config(self, websocket: WebSocketServerProtocol):
         """Send configuration to client."""
@@ -485,17 +536,23 @@ class MobileAgentWebSocketServer:
             "max_steps": self.config.agent.max_steps,
             "use_comptext": self.config.agent.use_comptext,
         }
-        await self._send_to_client(websocket, WebSocketEvent(
-            type=EventType.CONNECTED,
-            data={"config": config_data},
-        ))
+        await self._send_to_client(
+            websocket,
+            WebSocketEvent(
+                type=EventType.CONNECTED,
+                data={"config": config_data},
+            ),
+        )
 
     async def _send_error(self, websocket: WebSocketServerProtocol, error: str):
         """Send error to specific client."""
-        await self._send_to_client(websocket, WebSocketEvent(
-            type=EventType.ERROR,
-            data={"error": error},
-        ))
+        await self._send_to_client(
+            websocket,
+            WebSocketEvent(
+                type=EventType.ERROR,
+                data={"error": error},
+            ),
+        )
 
     async def _send_to_client(self, websocket: WebSocketServerProtocol, event: WebSocketEvent):
         """Send event to specific client."""

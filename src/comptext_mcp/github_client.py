@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class GitHubClientError(Exception):
     """GitHub client error"""
+
     pass
 
 
@@ -41,27 +42,29 @@ def audit_repository(owner: str, repo: str) -> Dict[str, Any]:
     """
     try:
         repository = get_repository(owner, repo)
-        
+
         # Get default branch
         default_branch = repository.default_branch
-        
+
         # Get all branches with last commit info
         branches = []
         for branch in repository.get_branches():
             commit = branch.commit
-            branches.append({
-                "name": branch.name,
-                "last_commit": {
-                    "sha": commit.sha,
-                    "author": commit.commit.author.name if commit.commit.author else "Unknown",
-                    "date": commit.commit.author.date.isoformat() if commit.commit.author else None,
-                    "message": commit.commit.message.split("\n")[0]  # First line only
+            branches.append(
+                {
+                    "name": branch.name,
+                    "last_commit": {
+                        "sha": commit.sha,
+                        "author": commit.commit.author.name if commit.commit.author else "Unknown",
+                        "date": commit.commit.author.date.isoformat() if commit.commit.author else None,
+                        "message": commit.commit.message.split("\n")[0],  # First line only
+                    },
                 }
-            })
-        
+            )
+
         # Sort branches by last commit date (newest first)
         branches.sort(key=lambda b: b["last_commit"]["date"] or "", reverse=True)
-        
+
         # Get open pull requests
         open_prs = []
         for pr in repository.get_pulls(state="open", sort="created", direction="asc"):
@@ -80,7 +83,7 @@ def audit_repository(owner: str, repo: str) -> Dict[str, Any]:
                 "is_dependabot": pr.user.login in ["dependabot[bot]", "dependabot-preview[bot]"],
             }
             open_prs.append(pr_info)
-        
+
         return {
             "owner": owner,
             "repo": repo,
@@ -99,29 +102,29 @@ def audit_repository(owner: str, repo: str) -> Dict[str, Any]:
 def merge_pull_request(owner: str, repo: str, pr_number: int, merge_method: str = "squash") -> Dict[str, Any]:
     """
     Merge a pull request using the specified method.
-    
+
     Args:
         owner: Repository owner
         repo: Repository name
         pr_number: Pull request number
         merge_method: Merge method ("squash", "merge", or "rebase")
-    
+
     Returns:
         Dict with merge result information
     """
     try:
         repository = get_repository(owner, repo)
         pr = repository.get_pull(pr_number)
-        
+
         # Check if it's a draft
         if pr.draft:
             return {
                 "success": False,
                 "pr_number": pr_number,
                 "reason": "skipped_draft",
-                "message": f"PR #{pr_number} is a draft and was skipped"
+                "message": f"PR #{pr_number} is a draft and was skipped",
             }
-        
+
         # Check if mergeable
         if not pr.mergeable:
             return {
@@ -129,18 +132,18 @@ def merge_pull_request(owner: str, repo: str, pr_number: int, merge_method: str 
                 "pr_number": pr_number,
                 "reason": "not_mergeable",
                 "message": f"PR #{pr_number} is not mergeable (state: {pr.mergeable_state})",
-                "mergeable_state": pr.mergeable_state
+                "mergeable_state": pr.mergeable_state,
             }
-        
+
         # Attempt to merge
         merge_result = pr.merge(merge_method=merge_method)
-        
+
         return {
             "success": merge_result.merged,
             "pr_number": pr_number,
             "sha": merge_result.sha,
             "message": merge_result.message,
-            "method": merge_method
+            "method": merge_method,
         }
     except GithubException as e:
         return {
@@ -148,20 +151,20 @@ def merge_pull_request(owner: str, repo: str, pr_number: int, merge_method: str 
             "pr_number": pr_number,
             "reason": "github_error",
             "message": f"GitHub API error: {e}",
-            "error": str(e)
+            "error": str(e),
         }
 
 
 def auto_merge_prs(owner: str, repo: str, merge_method: str = "squash", skip_drafts: bool = True) -> Dict[str, Any]:
     """
     Automatically merge all non-draft pull requests in order from oldest to newest.
-    
+
     Args:
         owner: Repository owner
         repo: Repository name
         merge_method: Merge method ("squash", "merge", or "rebase")
         skip_drafts: Whether to skip draft PRs (default: True)
-    
+
     Returns:
         Dict with merge results for all PRs
     """
@@ -169,44 +172,38 @@ def auto_merge_prs(owner: str, repo: str, merge_method: str = "squash", skip_dra
         # First, audit to get the list of PRs
         audit = audit_repository(owner, repo)
         prs = audit["open_prs"]
-        
+
         # Count drafts before filtering
         draft_count = len([pr for pr in prs if pr["draft"]])
-        
+
         # Filter out drafts if requested
         if skip_drafts:
             prs = [pr for pr in prs if not pr["draft"]]
-        
+
         # Sort by creation date (oldest first) to minimize conflicts
         prs.sort(key=lambda p: p["created_at"])
-        
-        results = {
-            "owner": owner,
-            "repo": repo,
-            "total_prs": len(prs),
-            "merge_method": merge_method,
-            "results": []
-        }
-        
+
+        results = {"owner": owner, "repo": repo, "total_prs": len(prs), "merge_method": merge_method, "results": []}
+
         for pr in prs:
             logger.info(f"Processing PR #{pr['number']}: {pr['title']}")
             merge_result = merge_pull_request(owner, repo, pr["number"], merge_method)
             merge_result["pr_title"] = pr["title"]
             merge_result["pr_author"] = pr["author"]
             results["results"].append(merge_result)
-            
+
             # If merge failed due to not being mergeable, stop
             if not merge_result["success"] and merge_result.get("reason") in ["not_mergeable", "github_error"]:
                 results["stopped_early"] = True
                 results["stop_reason"] = f"PR #{pr['number']} could not be merged"
                 logger.warning(f"Stopping auto-merge due to: {results['stop_reason']}")
                 break
-        
+
         # Calculate summary
         results["successful_merges"] = len([r for r in results["results"] if r["success"]])
         results["failed_merges"] = len([r for r in results["results"] if not r["success"]])
         results["skipped_drafts"] = draft_count if skip_drafts else 0
-        
+
         return results
     except GitHubClientError:
         raise
@@ -218,15 +215,15 @@ def auto_merge_prs(owner: str, repo: str, merge_method: str = "squash", skip_dra
 def generate_default_branch_commands(owner: str, repo: str, new_default: str) -> Dict[str, Any]:
     """
     Generate commands to change the default branch of a repository.
-    
+
     Note: This cannot be done automatically via the GitHub API without admin permissions.
     This function provides the commands the user can run manually.
-    
+
     Args:
         owner: Repository owner
         repo: Repository name
         new_default: New default branch name
-    
+
     Returns:
         Dict with commands in various formats
     """
@@ -238,12 +235,12 @@ def generate_default_branch_commands(owner: str, repo: str, new_default: str) ->
         "commands": {
             "gh_cli": f"gh api repos/{owner}/{repo} --method PATCH -f default_branch='{new_default}'",
             "curl": f"curl -X PATCH https://api.github.com/repos/{owner}/{repo} \\\n"
-                   f"  -H 'Authorization: Bearer $GITHUB_TOKEN' \\\n"
-                   f"  -H 'Accept: application/vnd.github+json' \\\n"
-                   f"  -d '{{\"default_branch\": \"{new_default}\"}}'",
+            f"  -H 'Authorization: Bearer $GITHUB_TOKEN' \\\n"
+            f"  -H 'Accept: application/vnd.github+json' \\\n"
+            f'  -d \'{{"default_branch": "{new_default}"}}\'',
             "web_ui": f"1. Go to https://github.com/{owner}/{repo}/settings/branches\n"
-                     f"2. In 'Default branch' section, click the switch icon\n"
-                     f"3. Select '{new_default}' from the dropdown\n"
-                     f"4. Click 'Update' and confirm"
-        }
+            f"2. In 'Default branch' section, click the switch icon\n"
+            f"3. Select '{new_default}' from the dropdown\n"
+            f"4. Click 'Update' and confirm",
+        },
     }

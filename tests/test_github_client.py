@@ -29,7 +29,7 @@ def mock_repo():
 def test_generate_default_branch_commands():
     """Test generating default branch change commands"""
     result = generate_default_branch_commands("ProfRandom92", "comptext-mcp-server", "develop")
-    
+
     assert result["owner"] == "ProfRandom92"
     assert result["repo"] == "comptext-mcp-server"
     assert result["new_default_branch"] == "develop"
@@ -43,7 +43,7 @@ def test_audit_repository_structure(mock_github, mock_repo):
     """Test audit repository returns correct structure"""
     # Setup mock
     mock_github.return_value.get_repo.return_value = mock_repo
-    
+
     # Mock branches
     mock_branch = MagicMock()
     mock_branch.name = "main"
@@ -55,13 +55,13 @@ def test_audit_repository_structure(mock_github, mock_repo):
     mock_commit.commit.message = "Test commit"
     mock_branch.commit = mock_commit
     mock_repo.get_branches.return_value = [mock_branch]
-    
+
     # Mock PRs
     mock_repo.get_pulls.return_value = []
-    
+
     with patch.dict("os.environ", {"GITHUB_TOKEN": "test_token"}):
         result = audit_repository("owner", "repo")
-    
+
     assert "owner" in result
     assert "repo" in result
     assert "default_branch" in result
@@ -78,10 +78,10 @@ def test_merge_pull_request_draft(mock_github, mock_repo):
     mock_pr.number = 123
     mock_repo.get_pull.return_value = mock_pr
     mock_github.return_value.get_repo.return_value = mock_repo
-    
+
     with patch.dict("os.environ", {"GITHUB_TOKEN": "test_token"}):
         result = merge_pull_request("owner", "repo", 123)
-    
+
     assert result["success"] is False
     assert result["reason"] == "skipped_draft"
     assert result["pr_number"] == 123
@@ -96,10 +96,10 @@ def test_merge_pull_request_not_mergeable(mock_github, mock_repo):
     mock_pr.number = 123
     mock_repo.get_pull.return_value = mock_pr
     mock_github.return_value.get_repo.return_value = mock_repo
-    
+
     with patch.dict("os.environ", {"GITHUB_TOKEN": "test_token"}):
         result = merge_pull_request("owner", "repo", 123)
-    
+
     assert result["success"] is False
     assert result["reason"] == "not_mergeable"
     assert result["mergeable_state"] == "dirty"
@@ -111,19 +111,19 @@ def test_merge_pull_request_success(mock_github, mock_repo):
     mock_pr.draft = False
     mock_pr.mergeable = True
     mock_pr.number = 123
-    
+
     mock_merge_result = MagicMock()
     mock_merge_result.merged = True
     mock_merge_result.sha = "abc123"
     mock_merge_result.message = "Merged"
     mock_pr.merge.return_value = mock_merge_result
-    
+
     mock_repo.get_pull.return_value = mock_pr
     mock_github.return_value.get_repo.return_value = mock_repo
-    
+
     with patch.dict("os.environ", {"GITHUB_TOKEN": "test_token"}):
         result = merge_pull_request("owner", "repo", 123, "squash")
-    
+
     assert result["success"] is True
     assert result["pr_number"] == 123
     assert result["method"] == "squash"
@@ -156,7 +156,7 @@ def test_auto_merge_prs_skip_drafts(mock_github, mock_repo):
                 },
             ],
         }
-        
+
         # Mock merge
         with patch("comptext_mcp.github_client.merge_pull_request") as mock_merge:
             mock_merge.return_value = {
@@ -165,10 +165,10 @@ def test_auto_merge_prs_skip_drafts(mock_github, mock_repo):
                 "sha": "abc123",
                 "message": "Merged",
             }
-            
+
             with patch.dict("os.environ", {"GITHUB_TOKEN": "test_token"}):
                 result = auto_merge_prs("owner", "repo")
-            
+
             # Should only process non-draft PR
             assert result["total_prs"] == 1
             assert mock_merge.call_count == 1

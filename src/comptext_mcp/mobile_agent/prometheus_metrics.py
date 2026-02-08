@@ -29,6 +29,7 @@ try:
         CollectorRegistry,
         REGISTRY,
     )
+
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False
@@ -53,12 +54,9 @@ class PrometheusMetrics:
     - comptext_mobile_agent_state: Current agent state
     """
 
-    def __init__(self, registry: Optional['CollectorRegistry'] = None):
+    def __init__(self, registry: Optional["CollectorRegistry"] = None):
         if not PROMETHEUS_AVAILABLE:
-            raise ImportError(
-                "prometheus_client not installed. "
-                "Install with: pip install prometheus-client"
-            )
+            raise ImportError("prometheus_client not installed. " "Install with: pip install prometheus-client")
 
         self.registry = registry or REGISTRY
         self._init_metrics()
@@ -67,135 +65,137 @@ class PrometheusMetrics:
         """Initialize all Prometheus metrics."""
         # Counters
         self.tasks_total = Counter(
-            'comptext_mobile_tasks_total',
-            'Total number of tasks executed',
-            ['mode', 'comptext_enabled'],
+            "comptext_mobile_tasks_total",
+            "Total number of tasks executed",
+            ["mode", "comptext_enabled"],
             registry=self.registry,
         )
 
         self.tasks_success = Counter(
-            'comptext_mobile_tasks_success_total',
-            'Number of successful tasks',
-            ['mode'],
+            "comptext_mobile_tasks_success_total",
+            "Number of successful tasks",
+            ["mode"],
             registry=self.registry,
         )
 
         self.tasks_failed = Counter(
-            'comptext_mobile_tasks_failed_total',
-            'Number of failed tasks',
-            ['mode', 'error_type'],
+            "comptext_mobile_tasks_failed_total",
+            "Number of failed tasks",
+            ["mode", "error_type"],
             registry=self.registry,
         )
 
         self.tokens_total = Counter(
-            'comptext_mobile_tokens_total',
-            'Total tokens used across all tasks',
-            ['type'],  # prompt, completion
+            "comptext_mobile_tokens_total",
+            "Total tokens used across all tasks",
+            ["type"],  # prompt, completion
             registry=self.registry,
         )
 
         self.tokens_saved = Counter(
-            'comptext_mobile_tokens_saved_total',
-            'Tokens saved by CompText DSL optimization',
+            "comptext_mobile_tokens_saved_total",
+            "Tokens saved by CompText DSL optimization",
             registry=self.registry,
         )
 
         self.steps_total = Counter(
-            'comptext_mobile_steps_total',
-            'Total steps executed across all tasks',
-            ['action_type'],
+            "comptext_mobile_steps_total",
+            "Total steps executed across all tasks",
+            ["action_type"],
             registry=self.registry,
         )
 
         self.actions_total = Counter(
-            'comptext_mobile_actions_total',
-            'Total actions executed by type',
-            ['action', 'success'],
+            "comptext_mobile_actions_total",
+            "Total actions executed by type",
+            ["action", "success"],
             registry=self.registry,
         )
 
         self.llm_requests_total = Counter(
-            'comptext_mobile_llm_requests_total',
-            'Total LLM API requests',
-            ['model', 'status'],
+            "comptext_mobile_llm_requests_total",
+            "Total LLM API requests",
+            ["model", "status"],
             registry=self.registry,
         )
 
         # Histograms
         self.task_duration = Histogram(
-            'comptext_mobile_task_duration_seconds',
-            'Task execution duration in seconds',
-            ['mode', 'comptext_enabled'],
+            "comptext_mobile_task_duration_seconds",
+            "Task execution duration in seconds",
+            ["mode", "comptext_enabled"],
             buckets=(0.5, 1, 2, 5, 10, 20, 30, 60, 120, 300),
             registry=self.registry,
         )
 
         self.step_duration = Histogram(
-            'comptext_mobile_step_duration_seconds',
-            'Single step execution duration',
-            ['action_type'],
+            "comptext_mobile_step_duration_seconds",
+            "Single step execution duration",
+            ["action_type"],
             buckets=(0.1, 0.25, 0.5, 1, 2, 5, 10),
             registry=self.registry,
         )
 
         self.llm_latency = Histogram(
-            'comptext_mobile_llm_latency_seconds',
-            'LLM API response latency',
-            ['model'],
+            "comptext_mobile_llm_latency_seconds",
+            "LLM API response latency",
+            ["model"],
             buckets=(0.5, 1, 2, 3, 5, 10, 20, 30),
             registry=self.registry,
         )
 
         self.tokens_per_task = Histogram(
-            'comptext_mobile_tokens_per_task',
-            'Token usage per task',
-            ['comptext_enabled'],
+            "comptext_mobile_tokens_per_task",
+            "Token usage per task",
+            ["comptext_enabled"],
             buckets=(100, 250, 500, 1000, 2000, 5000, 10000),
             registry=self.registry,
         )
 
         # Summaries
         self.token_reduction = Summary(
-            'comptext_mobile_token_reduction_percent',
-            'Token reduction percentage from CompText',
+            "comptext_mobile_token_reduction_percent",
+            "Token reduction percentage from CompText",
             registry=self.registry,
         )
 
         # Gauges
         self.device_connected = Gauge(
-            'comptext_mobile_device_connected',
-            'Whether Android device is connected (1=yes, 0=no)',
+            "comptext_mobile_device_connected",
+            "Whether Android device is connected (1=yes, 0=no)",
             registry=self.registry,
         )
 
         self.active_tasks = Gauge(
-            'comptext_mobile_active_tasks',
-            'Number of currently running tasks',
+            "comptext_mobile_active_tasks",
+            "Number of currently running tasks",
             registry=self.registry,
         )
 
         self.websocket_clients = Gauge(
-            'comptext_mobile_websocket_clients',
-            'Number of connected WebSocket clients',
+            "comptext_mobile_websocket_clients",
+            "Number of connected WebSocket clients",
             registry=self.registry,
         )
 
         self.agent_state = Gauge(
-            'comptext_mobile_agent_state',
-            'Current agent state (0=idle, 1=planning, 2=executing, 3=verifying, 4=completed, 5=failed)',
+            "comptext_mobile_agent_state",
+            "Current agent state (0=idle, 1=planning, 2=executing, 3=verifying, 4=completed, 5=failed)",
             registry=self.registry,
         )
 
         # Info
         self.agent_info = Info(
-            'comptext_mobile_agent',
-            'Mobile agent information',
+            "comptext_mobile_agent",
+            "Mobile agent information",
             registry=self.registry,
         )
-        self.agent_info.info({
-            'version': '2.1.0',
-            'framework': 'comptext-mcp',
-        })
+        self.agent_info.info(
+            {
+                "version": "2.1.0",
+                "framework": "comptext-mcp",
+            }
+        )
 
     # Recording methods
     def record_task_start(self, mode: str, comptext_enabled: bool):
@@ -300,6 +300,7 @@ class PrometheusMetrics:
 @dataclass
 class MetricsContext:
     """Context manager for recording task metrics."""
+
     metrics: PrometheusMetrics
     mode: str
     comptext_enabled: bool
@@ -336,6 +337,7 @@ def with_metrics(metrics: PrometheusMetrics):
         async def execute_task(task: str) -> AgentResult:
             ...
     """
+
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -345,11 +347,14 @@ def with_metrics(metrics: PrometheusMetrics):
                 duration = time.time() - start
 
                 # Try to extract metrics from result
-                if hasattr(result, 'total_tokens'):
+                if hasattr(result, "total_tokens"):
                     metrics.record_tokens(result.total_tokens, 0)
-                if hasattr(result, 'success'):
-                    metrics.tasks_success.labels(mode="default").inc() if result.success else \
-                        metrics.tasks_failed.labels(mode="default", error_type="task_error").inc()
+                if hasattr(result, "success"):
+                    (
+                        metrics.tasks_success.labels(mode="default").inc()
+                        if result.success
+                        else metrics.tasks_failed.labels(mode="default", error_type="task_error").inc()
+                    )
 
                 return result
             except Exception as e:
@@ -358,7 +363,9 @@ def with_metrics(metrics: PrometheusMetrics):
                     error_type=type(e).__name__,
                 ).inc()
                 raise
+
         return wrapper
+
     return decorator
 
 
@@ -457,11 +464,13 @@ def main():
 
     # Initialize metrics
     metrics = PrometheusMetrics()
-    metrics.agent_info.info({
-        'version': '2.1.0',
-        'framework': 'comptext-mcp',
-        'metrics_port': str(args.port),
-    })
+    metrics.agent_info.info(
+        {
+            "version": "2.1.0",
+            "framework": "comptext-mcp",
+            "metrics_port": str(args.port),
+        }
+    )
 
     start_metrics_server(args.port, args.host)
     logger.info(f"Metrics available at http://{args.host}:{args.port}/metrics")
@@ -469,6 +478,7 @@ def main():
 
     try:
         import signal
+
         signal.pause()
     except KeyboardInterrupt:
         logger.info("Shutting down...")

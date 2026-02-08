@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ChatMessage:
     """Chat message structure."""
+
     role: str  # "system", "user", "assistant", "tool"
     content: str
     tool_calls: Optional[list[dict]] = None
@@ -38,6 +39,7 @@ class ChatMessage:
 @dataclass
 class ChatResponse:
     """Chat completion response."""
+
     message: ChatMessage
     model: str
     total_tokens: int
@@ -49,6 +51,7 @@ class ChatResponse:
 @dataclass
 class TokenMetrics:
     """Token usage metrics for CompText comparison."""
+
     baseline_tokens: int = 0
     comptext_tokens: int = 0
     reduction_percent: float = 0.0
@@ -56,9 +59,7 @@ class TokenMetrics:
     def calculate_reduction(self):
         """Calculate token reduction percentage."""
         if self.baseline_tokens > 0:
-            self.reduction_percent = (
-                (self.baseline_tokens - self.comptext_tokens) / self.baseline_tokens * 100
-            )
+            self.reduction_percent = (self.baseline_tokens - self.comptext_tokens) / self.baseline_tokens * 100
 
 
 class OllamaCloudClient:
@@ -129,11 +130,12 @@ class OllamaCloudClient:
         await self._ensure_client()
 
         payload = {
-            "model": (model or self.config.model).value if isinstance(model or self.config.model, OllamaModel) else (model or self.config.model),
-            "messages": [
-                {"role": m.role, "content": m.content}
-                for m in messages
-            ],
+            "model": (
+                (model or self.config.model).value
+                if isinstance(model or self.config.model, OllamaModel)
+                else (model or self.config.model)
+            ),
+            "messages": [{"role": m.role, "content": m.content} for m in messages],
             "temperature": temperature or self.config.temperature,
             "max_tokens": max_tokens or self.config.max_tokens,
             "stream": False,
@@ -180,11 +182,12 @@ class OllamaCloudClient:
         await self._ensure_client()
 
         payload = {
-            "model": (model or self.config.model).value if isinstance(model or self.config.model, OllamaModel) else (model or self.config.model),
-            "messages": [
-                {"role": m.role, "content": m.content}
-                for m in messages
-            ],
+            "model": (
+                (model or self.config.model).value
+                if isinstance(model or self.config.model, OllamaModel)
+                else (model or self.config.model)
+            ),
+            "messages": [{"role": m.role, "content": m.content} for m in messages],
             "temperature": temperature or self.config.temperature,
             "stream": True,
         }
@@ -237,8 +240,7 @@ class OllamaCloudClient:
                 if attempt < self.config.max_retries:
                     delay = delays[min(attempt, len(delays) - 1)]
                     logger.warning(
-                        f"Request failed (attempt {attempt + 1}/{self.config.max_retries + 1}), "
-                        f"retrying in {delay}s: {e}"
+                        f"Request failed (attempt {attempt + 1}/{self.config.max_retries + 1}), " f"retrying in {delay}s: {e}"
                     )
                     await asyncio.sleep(delay)
                 else:

@@ -97,48 +97,48 @@ def truncate_text(text: str, max_length: int = 1000, suffix: str = "...") -> str
 def validate_github_repo_name(name: str) -> str:
     """
     Validate GitHub repository or owner name.
-    
+
     Args:
         name: Repository or owner name
-    
+
     Returns:
         Validated name
-    
+
     Raises:
         ValueError: If name is invalid
     """
     if not name or not name.strip():
         raise ValueError("Repository/owner name cannot be empty")
-    
+
     name = name.strip()
-    
+
     # GitHub allows alphanumeric, hyphen, underscore, and period
     if not re.match(r"^[a-zA-Z0-9._-]+$", name):
         raise ValueError(f"Invalid repository/owner name: {name}")
-    
+
     return name
 
 
 def validate_branch_name(name: str) -> str:
     """
     Validate Git branch name.
-    
+
     Args:
         name: Branch name
-    
+
     Returns:
         Validated name
-    
+
     Raises:
         ValueError: If name is invalid
     """
     if not name or not name.strip():
         raise ValueError("Branch name cannot be empty")
-    
+
     name = name.strip()
-    
+
     # Basic validation - branch names should not contain certain characters
     if any(char in name for char in [" ", "~", "^", ":", "?", "*", "["]):
         raise ValueError(f"Invalid branch name: {name}")
-    
+
     return name

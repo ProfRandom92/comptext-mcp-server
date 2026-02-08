@@ -25,6 +25,7 @@ if DATA_SOURCE == "notion":
         get_modules_by_type,
         NotionClientError as CodexClientError,
     )
+
     logger_msg = "Using Notion API as data source"
 else:
     from .local_codex_client import (
@@ -36,6 +37,7 @@ else:
         get_modules_by_type,
         LocalCodexClientError as CodexClientError,
     )
+
     logger_msg = "Using local JSON file as data source"
 
 from .github_client import (
@@ -169,7 +171,7 @@ async def list_tools() -> List[Tool]:
                         "type": "string",
                         "description": "Merge-Methode",
                         "enum": ["squash", "merge", "rebase"],
-                        "default": "squash"
+                        "default": "squash",
                     },
                 },
                 "required": ["owner", "repo"],
@@ -197,11 +199,15 @@ async def list_tools() -> List[Tool]:
                     "text": {"type": "string", "description": "Natural language request"},
                     "audience": {"type": "string", "enum": ["dev", "audit", "exec"], "default": "dev"},
                     "mode": {"type": "string", "enum": ["bundle_only", "allow_inline_fallback"], "default": "bundle_only"},
-                    "return": {"type": "string", "enum": ["dsl_only", "dsl_plus_confidence", "dsl_plus_explanation"], "default": "dsl_plus_confidence"},
+                    "return": {
+                        "type": "string",
+                        "enum": ["dsl_only", "dsl_plus_confidence", "dsl_plus_explanation"],
+                        "default": "dsl_plus_confidence",
+                    },
                 },
                 "required": ["text"],
             },
-        )
+        ),
     ]
 
 
@@ -355,9 +361,9 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
         elif name == "github_audit":
             owner = validate_github_repo_name(arguments.get("owner", ""))
             repo = validate_github_repo_name(arguments.get("repo", ""))
-            
+
             audit = audit_repository(owner, repo)
-            
+
             # Format output
             output = f"# GitHub Repository Audit: {owner}/{repo}\n\n"
             output += f"**Default Branch:** {audit['default_branch']}\n"
@@ -365,24 +371,24 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             output += f"**Total Open PRs:** {audit['total_open_prs']}\n"
             output += f"**Mergeable PRs:** {audit['mergeable_prs']}\n"
             output += f"**Draft PRs:** {audit['draft_prs']}\n\n"
-            
+
             # Branches with last commit (show top N)
             output += "## Branches (sorted by last commit, newest first)\n\n"
-            for branch in audit['branches'][:MAX_BRANCHES_TO_DISPLAY]:
-                commit = branch['last_commit']
+            for branch in audit["branches"][:MAX_BRANCHES_TO_DISPLAY]:
+                commit = branch["last_commit"]
                 output += f"### {branch['name']}\n"
                 output += f"- **Last Commit:** {commit['date']}\n"
                 output += f"- **Author:** {commit['author']}\n"
                 output += f"- **Message:** {commit['message']}\n"
                 output += f"- **SHA:** {commit['sha'][:7]}\n\n"
-            
-            if audit['total_branches'] > MAX_BRANCHES_TO_DISPLAY:
+
+            if audit["total_branches"] > MAX_BRANCHES_TO_DISPLAY:
                 output += f"_(showing {MAX_BRANCHES_TO_DISPLAY} of {audit['total_branches']} branches)_\n\n"
-            
+
             # Open PRs
             output += "## Open Pull Requests\n\n"
-            if audit['open_prs']:
-                for pr in audit['open_prs']:
+            if audit["open_prs"]:
+                for pr in audit["open_prs"]:
                     output += f"### PR #{pr['number']}: {pr['title']}\n"
                     output += f"- **Author:** {pr['author']}\n"
                     output += f"- **Created:** {pr['created_at']}\n"
@@ -394,16 +400,16 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
                     output += f"- **URL:** {pr['url']}\n\n"
             else:
                 output += "No open pull requests.\n"
-            
+
             return [TextContent(type="text", text=output)]
 
         elif name == "github_auto_merge":
             owner = validate_github_repo_name(arguments.get("owner", ""))
             repo = validate_github_repo_name(arguments.get("repo", ""))
             merge_method = arguments.get("merge_method", "squash")
-            
+
             results = auto_merge_prs(owner, repo, merge_method=merge_method)
-            
+
             # Format output
             output = f"# Auto-Merge Results: {owner}/{repo}\n\n"
             output += f"**Total PRs Processed:** {results['total_prs']}\n"
@@ -411,57 +417,58 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent | ImageCo
             output += f"**Successful Merges:** {results['successful_merges']}\n"
             output += f"**Failed Merges:** {results['failed_merges']}\n"
             output += f"**Skipped Drafts:** {results['skipped_drafts']}\n\n"
-            
-            if results.get('stopped_early'):
+
+            if results.get("stopped_early"):
                 output += f"⚠️ **Stopped Early:** {results['stop_reason']}\n\n"
-            
+
             output += "## Detailed Results\n\n"
-            for result in results['results']:
-                status = "✓" if result['success'] else "✗"
+            for result in results["results"]:
+                status = "✓" if result["success"] else "✗"
                 output += f"{status} **PR #{result['pr_number']}:** {result['pr_title']}\n"
                 output += f"   - **Author:** {result['pr_author']}\n"
-                
-                if result['success']:
+
+                if result["success"]:
                     output += f"   - **Status:** Merged successfully\n"
-                    if 'sha' in result:
+                    if "sha" in result:
                         output += f"   - **Commit SHA:** {result['sha'][:7]}\n"
                 else:
                     output += f"   - **Status:** {result['reason']}\n"
                     output += f"   - **Message:** {result['message']}\n"
-                
+
                 output += "\n"
-            
+
             return [TextContent(type="text", text=output)]
 
         elif name == "github_default_branch_commands":
             owner = validate_github_repo_name(arguments.get("owner", ""))
             repo = validate_github_repo_name(arguments.get("repo", ""))
             new_default = validate_branch_name(arguments.get("new_default", ""))
-            
+
             commands = generate_default_branch_commands(owner, repo, new_default)
-            
+
             # Format output
             output = f"# Change Default Branch: {owner}/{repo} → {new_default}\n\n"
             output += f"**Note:** {commands['note']}\n\n"
-            
+
             output += "## Using GitHub CLI (gh)\n\n"
             output += "```bash\n"
-            output += commands['commands']['gh_cli']
+            output += commands["commands"]["gh_cli"]
             output += "\n```\n\n"
-            
+
             output += "## Using curl\n\n"
             output += "```bash\n"
-            output += commands['commands']['curl']
+            output += commands["commands"]["curl"]
             output += "\n```\n\n"
-            
+
             output += "## Using Web UI\n\n"
-            output += commands['commands']['web_ui']
+            output += commands["commands"]["web_ui"]
             output += "\n"
-            
+
             return [TextContent(type="text", text=output)]
 
         elif name == "nl_to_comptext":
             from .compiler.nl_to_comptext import compile_nl_to_comptext
+
             result = compile_nl_to_comptext(
                 text=arguments.get("text", ""),
                 audience=arguments.get("audience", "dev"),
