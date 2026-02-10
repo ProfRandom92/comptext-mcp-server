@@ -174,6 +174,7 @@ black . && flake8 && mypy
 - [GitHub Automation](docs/GITHUB_AUTOMATION.md)
 - [FAQ](docs/FAQ.md)
 - [Optimization Summary](OPTIMIZATION_SUMMARY.md)
+- [Branch Cleanup Guide](BRANCH_CLEANUP_GUIDE.md) - Repository maintenance and branch management
 
 ## Contributing
 We welcome issues and PRs. Please see [CONTRIBUTING.md](CONTRIBUTING.md) and follow the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
