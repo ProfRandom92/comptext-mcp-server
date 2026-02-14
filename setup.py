@@ -17,7 +17,7 @@ rest_requirements = read_requirements("requirements-rest.txt")
 
 setup(
     name="comptext-mcp-server",
-    version="1.0.0",
+    version="2.0.0",
     author="ProfRandom92",
     author_email="159939812+ProfRandom92@users.noreply.github.com",
     description="Token-efficient Domain-Specific Language for LLM interactions",
